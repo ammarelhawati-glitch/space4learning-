@@ -3,100 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فضاء للتعلم</title>
+    <title>فضاء للتعلم - الحركة الموجية</title>
     <style>
-* { box-sizing: border-box; }
-body { 
-    font-family: 'Segoe UI', Tahoma, sans-serif; 
-    margin: 0; display: flex; height: 100vh; 
-    background-color: #f0f4f8; overflow: hidden;
-    direction: rtl; /* لضمان الاتجاه العربي الصحيح */
-}
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; display: flex; height: 100vh; 
+            background-color: #f0f4f8; overflow: hidden;
+            direction: rtl;
+        }
 
-/* القائمة الجانبية - الوضع الافتراضي (كمبيوتر) */
-.sidebar {
-    width: 300px; background-color: #1e3a5f; color: white;
-    display: flex; flex-direction: column; padding: 20px;
-    box-shadow: -4px 0 15px rgba(0,0,0,0.2);
-    transition: 0.4s ease;
-    z-index: 1000;
-}
+        /* القائمة الجانبية - كمبيوتر */
+        .sidebar {
+            width: 300px; background-color: #1e3a5f; color: white;
+            display: flex; flex-direction: column; padding: 20px;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+            transition: 0.4s ease;
+            z-index: 1000;
+        }
 
-.sidebar h2 { 
-    text-align: center; font-size: 1.3em; color: #90cdf4; 
-    border-bottom: 1px solid #2c5282; padding-bottom: 15px;
-}
+        .sidebar h2 { 
+            text-align: center; font-size: 1.3em; color: #90cdf4; 
+            border-bottom: 1px solid #2c5282; padding-bottom: 15px;
+        }
 
-/* زر الهامبرغر للموبايل (مخفي في الكمبيوتر) */
-.mobile-nav-toggle {
-    display: none;
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 1001;
-    background: #1e3a5f;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
+        .mobile-nav-toggle {
+            display: none; position: fixed; top: 10px; right: 10px;
+            z-index: 1001; background: #1e3a5f; color: white;
+            border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;
+        }
 
-/* طبقة التعتيم (Overlay) */
-.overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 999;
-}
+        .overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%;
+            height: 100%; background: rgba(0,0,0,0.5); z-index: 999;
+        }
 
-.menu-btn {
-    background: #2a4365; color: #ebf8ff; border: none;
-    padding: 14px; margin-bottom: 10px; border-radius: 10px;
-    cursor: pointer; text-align: right; font-size: 1em;
-    transition: 0.3s; display: flex; align-items: center; gap: 10px;
-    width: 100%;
-}
+        .menu-btn {
+            background: #2a4365; color: #ebf8ff; border: none;
+            padding: 14px; margin-bottom: 10px; border-radius: 10px;
+            cursor: pointer; text-align: right; font-size: 1em;
+            transition: 0.3s; display: flex; align-items: center; gap: 10px; width: 100%;
+        }
 
-.menu-btn:hover { background: #3182ce; }
-.menu-btn.active { background: #4299e1; font-weight: bold; }
+        .menu-btn:hover { background: #3182ce; }
+        .menu-btn.active { background: #4299e1; font-weight: bold; }
 
-.main-content { flex: 1; padding: 20px; position: relative; overflow: hidden; }
-.display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; }
-.active-card { display: block; }
+        .home-btn { 
+            margin-top: auto; padding: 12px; background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white; text-decoration: none; border-radius: 10px; text-align: center;
+        }
 
-/* إعدادات الموبايل */
-@media (max-width: 768px) {
-    .mobile-nav-toggle { display: block; } /* إظهار الزر */
-    
-    .sidebar {
-        position: fixed;
-        right: -300px; /* إخفاء خارج الشاشة */
-        top: 0;
-        height: 100vh;
-    }
-    
-    .sidebar.open {
-        right: 0; /* انزلاق للداخل */
-    }
-    
-    .overlay.active {
-        display: block; /* تفعيل التعتيم */
-    }
+        .main-content { flex: 1; padding: 20px; position: relative; overflow: hidden; }
+        .display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .active-card { display: block; }
 
-    .main-content {
-        padding: 60px 10px 10px 10px; /* مسافة للزر العلوي */
-    }
-}
+        #quiz-timer {
+            background: #e74c3c; color: white; padding: 10px 20px;
+            border-radius: 8px; font-weight: bold; position: sticky; top: 0; z-index: 10;
+            display: inline-block; margin-bottom: 20px;
+        }
 
+        .question-item { background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #4299e1; transition: 0.3s; }
+        .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
+        .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
+        .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
+        
+        iframe { width: 100%; height: 100%; border: none; border-radius: 10px; }
+
+        @media (max-width: 768px) {
+            .mobile-nav-toggle { display: block; }
+            .sidebar { position: fixed; right: -300px; top: 0; height: 100vh; }
+            .sidebar.open { right: 0; }
+            .overlay.active { display: block; }
+            .main-content { padding: 60px 10px 10px 10px; }
+        }
     </style>
 </head>
 <body>
-<button class="mobile-nav-toggle" onclick="toggleSidebar()">☰ القائمة</button>
 
-<div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
-    <div class="sidebar">
+    <button class="mobile-nav-toggle" onclick="toggleSidebar()">☰ القائمة</button>
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="sidebar" id="sidebar">
         <h2>🌊 الحركة الموجية</h2>
         <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
         <button class="menu-btn" onclick="showContent('video-div', this)">🎬 تجربة اليوتيوب</button>
@@ -107,14 +95,9 @@ body {
 
     <div class="main-content">
         <div id="pdf-div" class="display-card active-card">
-           <div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%;
- padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
- border-radius: 8px; will-change: transform;">
-  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-    src="https://www.canva.com/design/DAG-Nmt7-VM/UB6ZzMV7qHW5yCjsNOGcVQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-  </iframe>
-</div>
-<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAG-Nmt7-VM&#x2F;UB6ZzMV7qHW5yCjsNOGcVQ&#x2F;view?utm_content=DAG-Nmt7-VM&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">waves</a> by Ammar Barakat
+            <div style="position: relative; width: 100%; height: 600px; overflow: hidden; border-radius: 8px;">
+                <iframe src="https://www.canva.com/design/DAG-Nmt7-VM/UB6ZzMV7qHW5yCjsNOGcVQ/view?embed" allowfullscreen></iframe>
+            </div>
         </div>
 
         <div id="video-div" class="display-card">
@@ -127,7 +110,7 @@ body {
 
         <div id="quiz-div" class="display-card">
             <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
-            <h3>📝 اختبار موجات  ( اختر الاجابة الصحيحة)</h3>
+            <h3>📝 اختبار موجات</h3>
             <div id="quiz-container"></div>
             <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
             <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
@@ -135,6 +118,33 @@ body {
     </div>
 
     <script>
+        // دالة تبديل القائمة الجانبية
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // دالة عرض المحتوى
+        function showContent(id, btn) {
+            document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(id).classList.add('active-card');
+            btn.classList.add('active');
+
+            if(id === 'quiz-div' && !quizLoaded) { 
+                prepareAndLoadQuiz(); 
+                startTimer(); 
+                quizLoaded = true; 
+            }
+
+            // إغلاق القائمة في الموبايل بعد الاختيار
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+        }
+
+        // إعدادات الاختبار
         let timerInstance;
         let timeLeft = 600; 
         let quizLoaded = false;
@@ -163,7 +173,6 @@ body {
             { q: "الموجة التي لا تسبب انتقالاً لجزيئات الوسط من مكانها هي الموجة:", options: ["الميكانيكية", "الكهرومغناطيسية", "جميع ما سبق", "لا شيء مما سبق"], correct: "جميع ما سبق" }
         ];
 
-        // دالة الخلط العشوائي
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -172,57 +181,23 @@ body {
             return array;
         }
 
-        function showContent(id, btn) {
-            document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
-            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active-card');
-            btn.classList.add('active');
-            if(id === 'quiz-div' && !quizLoaded) { prepareAndLoadQuiz(); startTimer(); quizLoaded = true; }
-        }
-
         function prepareAndLoadQuiz() {
-            // خلط الأسئلة أولاً
             shuffledQuizData = shuffle([...originalQuizData]);
-            
             const container = document.getElementById('quiz-container');
             container.innerHTML = shuffledQuizData.map((item, i) => {
-                // خلط الخيارات لكل سؤال بشكل مستقل
                 const shuffledOptions = shuffle([...item.options]);
                 return `
                     <div class="question-item" id="q-item-${i}">
                         <p><b>${i+1}. ${item.q}</b></p>
-                        ${shuffledOptions.map((opt, oi) => `
+                        ${shuffledOptions.map(opt => `
                             <label style="display:block; margin:5px 0; cursor:pointer;">
                                 <input type="radio" name="q${i}" value="${opt}"> ${opt}
                             </label>`).join('')}
                         <div id="feedback-${i}" class="feedback-text"></div>
-                    </div>
-					
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('active');
-}
+                    </div>`;
+            }).join('');
+        }
 
-function showContent(cardId, btn) { 
-    // 1. إخفاء جميع الكروت
-    const cards = document.querySelectorAll('.display-card');
-    cards.forEach(card => card.classList.remove('active-card'));
-    
-    // 2. إظهار الكارت المطلوب
-    document.getElementById(cardId).classList.add('active-card');
-    
-    // 3. تحديث شكل الأزرار
-    const buttons = document.querySelectorAll('.menu-btn');
-    buttons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    // 4. إغلاق القائمة تلقائياً في الموبايل فقط بعد الاختيار
-    if (window.innerWidth <= 768) {
-        toggleSidebar();
-    }
-}
         function startTimer() {
             timerInstance = setInterval(() => {
                 let min = Math.floor(timeLeft / 60);
@@ -236,14 +211,11 @@ function showContent(cardId, btn) {
         function calculateScore(manual) {
             if(manual) clearInterval(timerInstance);
             let score = 0;
-
             shuffledQuizData.forEach((item, i) => {
                 const selected = document.querySelector(`input[name="q${i}"]:checked`);
                 const questionDiv = document.getElementById(`q-item-${i}`);
                 const feedbackDiv = document.getElementById(`feedback-${i}`);
-                
                 let isCorrect = selected && selected.value === item.correct;
-                
                 if (isCorrect) {
                     score++;
                     questionDiv.classList.add('correct-answer');
@@ -254,19 +226,16 @@ function showContent(cardId, btn) {
                     feedbackDiv.innerHTML = `❌ الإجابة الصحيحة هي: ${item.correct}`;
                 }
             });
-
             const res = document.getElementById('result-box');
-            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من 20 <br> <small>استعن بالله وبالتوفيق دائما</small>`;
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من 20`;
             res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
-            res.style.color = score >= 10 ? "#155724" : "#721c24";
-            
             document.getElementById('submit-quiz-btn').disabled = true;
-            document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
-            document.querySelectorAll('input').forEach(i => i.disabled = true);
+            document.querySelectorAll('input').forEach(input => input.disabled = true);
         }
     </script>
-		<div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999; direction: rtl;">
- by:   <b>Ammar Barakat  <b>
+
+    <div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); z-index: 9999;">
+        by: <b>Ammar Barakat</b>
     </div>
 </body>
 </html>
