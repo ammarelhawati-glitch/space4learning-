@@ -31,6 +31,7 @@
             display: none; position: fixed; top: 10px; right: 10px;
             z-index: 1001; background: #1e3a5f; color: white;
             border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;
+            font-size: 18px;
         }
 
         .overlay {
@@ -53,29 +54,39 @@
             color: white; text-decoration: none; border-radius: 10px; text-align: center;
         }
 
-        .main-content { flex: 1; padding: 20px; position: relative; overflow: hidden; }
-        .display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .main-content { flex: 1; padding: 20px; position: relative; overflow-y: auto; }
+        .display-card { width: 100%; height: auto; min-height: 100%; background: white; border-radius: 15px; display: none; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .active-card { display: block; }
 
-        #quiz-timer {
-            background: #e74c3c; color: white; padding: 10px 20px;
-            border-radius: 8px; font-weight: bold; position: sticky; top: 0; z-index: 10;
-            display: inline-block; margin-bottom: 20px;
-        }
+        iframe { width: 100%; height: 500px; border: none; border-radius: 10px; }
 
-        .question-item { background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #4299e1; transition: 0.3s; }
-        .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
-        .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
-        .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
-        
-        iframe { width: 100%; height: 100%; border: none; border-radius: 10px; }
-
+        /* تعديلات الموبايل القاطعة */
         @media (max-width: 768px) {
+            body { flex-direction: column; }
             .mobile-nav-toggle { display: block; }
-            .sidebar { position: fixed; right: -300px; top: 0; height: 100vh; }
-            .sidebar.open { right: 0; }
-            .overlay.active { display: block; }
-            .main-content { padding: 60px 10px 10px 10px; }
+            
+            .sidebar { 
+                position: fixed; 
+                right: -305px; /* مخفية تماماً */
+                top: 0; 
+                height: 100vh; 
+                width: 300px;
+                transition: 0.4s ease-in-out;
+            }
+            
+            /* هذا هو الكلاس الذي يفتح القائمة */
+            .sidebar.open { 
+                right: 0 !important; 
+            }
+            
+            .overlay.active { 
+                display: block; 
+            }
+            
+            .main-content { 
+                width: 100%; 
+                padding: 70px 15px 20px 15px; /* مسافة للزر العلوي */
+            }
         }
     </style>
 </head>
@@ -95,9 +106,7 @@
 
     <div class="main-content">
         <div id="pdf-div" class="display-card active-card">
-            <div style="position: relative; width: 100%; height: 600px; overflow: hidden; border-radius: 8px;">
-                <iframe src="https://www.canva.com/design/DAG-Nmt7-VM/UB6ZzMV7qHW5yCjsNOGcVQ/view?embed" allowfullscreen></iframe>
-            </div>
+             <iframe src="https://www.canva.com/design/DAG-Nmt7-VM/UB6ZzMV7qHW5yCjsNOGcVQ/view?embed" allowfullscreen></iframe>
         </div>
 
         <div id="video-div" class="display-card">
@@ -109,22 +118,29 @@
         </div>
 
         <div id="quiz-div" class="display-card">
-            <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
+            <div id="quiz-timer" style="background: #e74c3c; color: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: inline-block;">⏱️ الوقت: <span id="timer-display">10:00</span></div>
             <h3>📝 اختبار موجات</h3>
             <div id="quiz-container"></div>
-            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
-            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 20px;">إرسال النتائج</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.2em; border-radius: 10px;"></div>
         </div>
     </div>
 
     <script>
-        // دالة تبديل القائمة الجانبية
+        let quizLoaded = false;
+        let timerInstance;
+        let timeLeft = 600;
+        let shuffledQuizData = [];
+
+        // دالة الفتح والإغلاق
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('overlay').classList.toggle('active');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
         }
 
-        // دالة عرض المحتوى
+        // دالة تبديل المحتوى
         function showContent(id, btn) {
             document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
@@ -138,18 +154,13 @@
                 quizLoaded = true; 
             }
 
-            // إغلاق القائمة في الموبايل بعد الاختيار
+            // إغلاق القائمة في الموبايل تلقائياً بعد الاختيار
             if (window.innerWidth <= 768) {
                 toggleSidebar();
             }
         }
 
-        // إعدادات الاختبار
-        let timerInstance;
-        let timeLeft = 600; 
-        let quizLoaded = false;
-        let shuffledQuizData = [];
-
+        // بيانات الاختبار (كما هي في كودك)
         const originalQuizData = [
             { q: "الموجات هي اضطراب ينتقل في الوسط ويقوم بنقل ....... في اتجاه انتشارها:", options: ["المادة", "الطاقة", "الجزيئات", "الكتلة"], correct: "الطاقة" },
             { q: "الموجات التي تحتاج لوسط مادي لانتقالها تسمى موجات:", options: ["كهرومغناطيسية", "ميكانيكية", "فراغية", "ضوئية"], correct: "ميكانيكية" },
@@ -190,7 +201,7 @@
                     <div class="question-item" id="q-item-${i}">
                         <p><b>${i+1}. ${item.q}</b></p>
                         ${shuffledOptions.map(opt => `
-                            <label style="display:block; margin:5px 0; cursor:pointer;">
+                            <label style="display:block; margin:8px 0; cursor:pointer;">
                                 <input type="radio" name="q${i}" value="${opt}"> ${opt}
                             </label>`).join('')}
                         <div id="feedback-${i}" class="feedback-text"></div>
@@ -218,24 +229,21 @@
                 let isCorrect = selected && selected.value === item.correct;
                 if (isCorrect) {
                     score++;
-                    questionDiv.classList.add('correct-answer');
+                    questionDiv.style.borderRight = "5px solid #28a745";
+                    questionDiv.style.backgroundColor = "#d4edda";
                 } else {
-                    questionDiv.classList.add('wrong-answer');
+                    questionDiv.style.borderRight = "5px solid #dc3545";
+                    questionDiv.style.backgroundColor = "#f8d7da";
                     feedbackDiv.style.display = "block";
-                    feedbackDiv.style.color = "#c0392b";
                     feedbackDiv.innerHTML = `❌ الإجابة الصحيحة هي: ${item.correct}`;
                 }
             });
             const res = document.getElementById('result-box');
             res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من 20`;
-            res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
-            document.getElementById('submit-quiz-btn').disabled = true;
-            document.querySelectorAll('input').forEach(input => input.disabled = true);
+            res.style.padding = "15px";
+            res.style.background = "#fff";
+            window.scrollTo(0, 0);
         }
     </script>
-
-    <div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); z-index: 9999;">
-        by: <b>Ammar Barakat</b>
-    </div>
 </body>
 </html>
