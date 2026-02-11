@@ -56,11 +56,17 @@
         
         iframe, object { width: 100%; height: 100%; border: none; border-radius: 10px; }
 
-        @media (max-width: 768px) {
-            body { flex-direction: column; overflow-y: auto; height: auto; }
-            .sidebar { width: 100%; height: auto; position: sticky; top: 0; z-index: 100; }
-            .main-content { padding: 10px; height: 85vh; }
-        }
+      @media screen and (max-width: 768px) {
+  .sidebar {
+    width: 0; /* إخفاء القائمة تماماً في البداية */
+  }
+  .menu-btn {
+    display: block; /* إظهار زر القائمة في الموبايل */
+  }
+  #main {
+    margin-right: 0;
+  }
+}
     </style>
 </head>
 <body>
@@ -166,6 +172,16 @@
                             </label>`).join('')}
                         <div id="feedback-${i}" class="feedback-text"></div>
                     </div>
+					
+   function toggleSidebar() {
+       var sidebar = document.getElementById("mySidebar");
+       // إذا كانت القائمة مغلقة (عرضها 0)، افتحها
+        if (sidebar.style.width === "250px") {
+         sidebar.style.width = "0";
+         } else {
+    sidebar.style.width = "250px";
+  }
+}
                 `;
             }).join('');
         }
