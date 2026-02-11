@@ -12,24 +12,33 @@
             background-color: #f0f4f8; overflow: hidden;
         }
 
-        .sidebar {
-            width: 300px; background-color: #1e3a5f; color: white;
-            display: flex; flex-direction: column; padding: 20px;
-            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
-        }
+       /* تصميم القائمة للكمبيوتر */
+.sidebar {
+  height: 100%;
+  width: 250px; /* العرض الافتراضي */
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  right: 0; /* لجعلها جهة اليمين */
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s; /* حركة ناعمة */
+  padding-top: 60px;
+}
 
         .sidebar h2 { 
             text-align: center; font-size: 1.3em; color: #90cdf4; 
             border-bottom: 1px solid #2c5282; padding-bottom: 15px;
         }
 
-        .menu-btn {
-            background: #2a4365; color: #ebf8ff; border: none;
-            padding: 14px; margin-bottom: 10px; border-radius: 10px;
-            cursor: pointer; text-align: right; font-size: 1em;
-            transition: 0.3s; display: flex; align-items: center; gap: 10px;
-        }
-
+       /* إخفاء زر الفتح في الشاشات الكبيرة */
+.menu-btn {
+  display: none;
+  font-size: 30px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
         .menu-btn:hover { background: #3182ce; }
         .menu-btn.active { background: #4299e1; font-weight: bold; }
 
@@ -55,8 +64,8 @@
         .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
         
         iframe, object { width: 100%; height: 100%; border: none; border-radius: 10px; }
-
-      @media screen and (max-width: 768px) {
+/* --- تعديلات الموبايل --- */
+@media screen and (max-width: 768px) {
   .sidebar {
     width: 0; /* إخفاء القائمة تماماً في البداية */
   }
@@ -67,6 +76,7 @@
     margin-right: 0;
   }
 }
+
     </style>
 </head>
 <body>
