@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space4learn | فضاء للتعلم</title>
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --accent-red: #ff0000;
+            --accent-blue: #3498db;
+            --bg-light: #f1f5f9;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background-color: var(--bg-light); 
+            margin: 0; padding: 0; 
+            overflow-x: hidden;
+        }
+
+        /* --- الهيدر مع خلفية الفضاء والمحاذاة الجديدة --- */
+        header { 
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
+                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* تأثير الحركة عند التمرير */
+            color: white; 
+            padding: 80px 10%; 
+            display: flex; 
+            align-items: center; /* محاذاة اللوجو والنص على نفس الخط الأفقي الوسطي */
+            justify-content: flex-start; 
+            gap: 40px; 
+            border-bottom: 5px solid var(--accent-red);
+        }
+
+        .logo-box {
+            width: 180px; /* حجم متناسق مع حجم الخط الكبير */
+            height: 180px;
+            background-color: rgba(0, 0, 0, 0.6); 
+            border-radius: 20px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            flex-shrink: 0; 
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+            border: 2px solid var(--accent-red);
+            backdrop-filter: blur(10px);
+        }
+        .logo-box img { max-width: 80%; max-height: 80%; object-fit: contain; }
+
+        /* منطقة النصوص المحاذية للوجو */
+        .header-text { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; /* لضمان توسط النصوص طولياً بجانب اللوجو */
+        }
+
+        .main-title { 
+            font-size: 4em; /* تكبير بسيط للمحاذاة */
+            margin: 0; 
+            line-height: 0.85; 
+            font-weight: 900; 
+            font-family: 'Arial Black', sans-serif;
+            text-shadow: 3px 3px 15px rgba(0,0,0,0.8);
+        }
+
+        .sub-title { 
+            font-size: 4em; 
+            margin: 0; 
+            font-weight: 900; 
+            opacity: 1; 
+            line-height: 1;
+            text-shadow: 3px 3px 15px rgba(0,0,0,0.8);
+        }
+
+        .site-description {
+            font-size: 1.2em; 
+            margin-top: 20px; 
+            color: #f1f5f9;
+            max-width: 600px; 
+            line-height: 1.6;
+            border-right: 5px solid var(--accent-red); 
+            padding-right: 20px;
+            font-weight: 500;
+        }
+
+        .red-accent { color: var(--accent-red); }
+
+        /* --- حاوية الدروس --- */
+        .container { max-width: 1300px; margin: 50px auto; padding: 0 20px; }
+        .lessons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
+
+        .card { 
+            background: white; border-radius: 18px; overflow: hidden; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            border-top: 6px solid var(--accent-blue); display: flex; flex-direction: column;
+        }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px rgba(0,0,0,0.1); }
+        .card-icon { font-size: 2.5em; padding: 25px 0 10px; text-align: center; background: #fafafa; }
+        .card-body { padding: 20px; text-align: center; flex-grow: 1; }
+        .card-body h3 { margin: 0 0 10px; font-size: 1.3em; color: var(--primary-dark); }
+        .card-body p { color: #64748b; font-size: 0.95em; height: 45px; margin-bottom: 20px; line-height: 1.5; overflow: hidden; }
+        .card-link { display: block; background: var(--accent-blue); color: white; padding: 12px; text-decoration: none; border-radius: 10px; font-weight: bold; }
+
+        /* --- قسم التواصل الرشيق --- */
+        .contact-section { background: #fff; padding: 60px 10%; margin-top: 60px; text-align: center; border-top: 1px solid #eee; }
+        .contact-section h2 { font-size: 2.5em; color: var(--primary-dark); margin-bottom: 50px; }
+        .contact-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+        
+        .contact-item { 
+            background: #fff; padding: 30px 25px; border-radius: 25px; width: 200px;
+            transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #f3f4f6;
+        }
+        .contact-item:hover { transform: scale(1.05); border-color: var(--accent-red); }
+        .contact-img { width: 40px; height: 40px; margin-bottom: 10px; }
+        .contact-item h4 { font-size: 1.3em; margin-bottom: 10px; }
+        .contact-item a { color: var(--accent-blue); text-decoration: none; font-weight: bold; }
+
+        footer { text-align: center; padding: 50px; background: white; border-top: 1px solid #ddd; font-weight: 600; }
+
+        @media (max-width: 900px) {
+            header { flex-direction: column; text-align: center; padding: 60px 5%; }
+            .header-text { align-items: center; }
+            .site-description { border-right: none; border-top: 4px solid var(--accent-red); padding: 20px 0; }
+            .main-title, .sub-title { font-size: 3em; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-box">
+        <img src="logo.png" alt="Space4learn Logo">
+    </div>
+    <div class="header-text">
+        <h1 class="main-title">Space<span class="red-accent">4</span>learn</h1>
+        <h1 class="sub-title">فضــاء <span class="red-accent">لـ</span>لتــعـلم</h1>
+        <p class="site-description">منصة تعليمية متطورة تهدف لتبسيط الفيزياء، حيث تلتقي التكنولوجيا بالعلوم لاستكشاف أسرار الكون.</p>
+    </div>
+</header>
+
+<div class="container">
+    <div class="lessons-grid">
+        <div class="card"><div class="card-icon">〰️</div><div class="card-body"><h3>الموجات</h3><p>الموجات المستعرضة والطولية وخصائصها.</p><a href="waves.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card optic"><div class="card-icon">💡</div><div class="card-body"><h3>الضوء</h3><p>طبيعة الضوء وسلوكه كموجة.</p><a href="light-nature.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card optic"><div class="card-icon">💎</div><div class="card-body"><h3>الانكسار</h3><p>قانون سنل وتحلل الضوء في المنشور.</p><a href="refraction.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card optic"><div class="card-icon">🪞</div><div class="card-body"><h3>المرايا الكروية</h3><p>الصور في المرايا المقعرة والمحدبة.</p><a href="spherical-mirrors.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card optic"><div class="card-icon">🔍</div><div class="card-body"><h3>العدسات</h3><p>انكسار الضوء وتطبيقات العدسات.</p><a href="lenses.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card optic"><div class="card-icon">🔭</div><div class="card-body"><h3>البصريات</h3><p>التلسكوبات والمجاهر البصرية المتقدمة.</p><a href="optical-instruments.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card elec"><div class="card-icon">⚡</div><div class="card-body"><h3>الساكنة</h3><p>الشحنات وقانون كولوم والمجال.</p><a href="static-electricity.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card elec"><div class="card-icon">🔋</div><div class="card-body"><h3>التيارية</h3><p>قانون أوم والمقاومة والجهد.</p><a href="current-electricity.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card elec"><div class="card-icon">🔌</div><div class="card-body"><h3>الدوائر</h3><p>توصيل المقاومات وتحليل الدوائر.</p><a href="electric-circuits.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card magnetic"><div class="card-icon">🧲</div><div class="card-body"><h3>المغناطيسية</h3><p>خطوط الفيض وخصائص المغناطيس.</p><a href="magnetism.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card magnetic"><div class="card-icon">🌀</div><div class="card-body"><h3>الأثر المغناطيسي</h3><p>تجربة اورستد وقاعدة فليمنج لليد اليسرى</p><a href="Electromagnetism.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card modern"><div class="card-icon">⚛️</div><div class="card-body"><h3>الذرة</h3><p>تطور النماذج الذرية ومستويات الطاقة.</p><a href="atomic-structure.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card modern"><div class="card-icon">☢️</div><div class="card-body"><h3>الإشعاعات</h3><p>النشاط الإشعاعي والتفاعلات النووية.</p><a href="nuclear-physics.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card motion"><div class="card-icon">🔄</div><div class="card-body"><h3>الحركة الدائرية</h3><p>القوة الجاذبة المركزية وحركة الأجسام.</p><a href="circular-motion.html" class="card-link">دخول الدرس</a></div></div>
+        <div class="card motion"><div class="card-icon">⏳</div><div class="card-body"><h3>الحركة التوافقية</h3><p>البندول البسيط والاهتزازات والتردد.</p><a href="SimpleHarmonicMotion.html" class="card-link">دخول الدرس</a></div></div>
+    </div>
+</div>
+
+<section class="contact-section">
+    <h2>تواصل معنا</h2>
+    <div class="contact-grid">
+        <div class="contact-item">
+            <img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="Email" class="contact-img">
+            <h4>البريد الإلكتروني</h4>
+            <p><a href="mailto:info@space4learn.com">info@space4learn.com</a></p>
+        </div>
+        
+        <div class="contact-item">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" class="contact-img">
+            <h4>واتساب</h4>
+            <p><a href="https://wa.me/249121790640">+249121790640</a></p>
+        </div>
+    </div>
+</section>  
+
+<footer>
+    <p>جميع الحقوق محفوظة لمنصة Space<span class="red-accent">4</span>learn &copy; 2026</p>
+</footer>
+
+</body>
+</html>
