@@ -5,82 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فضاء للتعلم</title>
     <style>
-        * { box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            margin: 0; display: flex; height: 100vh; 
-            background-color: #f0f4f8; overflow: hidden;
-        }
+* { box-sizing: border-box; }
+body { 
+    font-family: 'Segoe UI', Tahoma, sans-serif; 
+    margin: 0; display: flex; height: 100vh; 
+    background-color: #f0f4f8; overflow: hidden;
+    direction: rtl; /* لضمان الاتجاه العربي الصحيح */
+}
 
-       /* تصميم القائمة للكمبيوتر */
+/* القائمة الجانبية - الوضع الافتراضي (كمبيوتر) */
 .sidebar {
-  height: 100%;
-  width: 250px; /* العرض الافتراضي */
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  right: 0; /* لجعلها جهة اليمين */
-  background-color: #111;
-  overflow-x: hidden;
-  transition: 0.5s; /* حركة ناعمة */
-  padding-top: 60px;
+    width: 300px; background-color: #1e3a5f; color: white;
+    display: flex; flex-direction: column; padding: 20px;
+    box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+    transition: 0.4s ease;
+    z-index: 1000;
 }
 
-        .sidebar h2 { 
-            text-align: center; font-size: 1.3em; color: #90cdf4; 
-            border-bottom: 1px solid #2c5282; padding-bottom: 15px;
-        }
+.sidebar h2 { 
+    text-align: center; font-size: 1.3em; color: #90cdf4; 
+    border-bottom: 1px solid #2c5282; padding-bottom: 15px;
+}
 
-       /* إخفاء زر الفتح في الشاشات الكبيرة */
+/* زر الهامبرغر للموبايل (مخفي في الكمبيوتر) */
+.mobile-nav-toggle {
+    display: none;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1001;
+    background: #1e3a5f;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* طبقة التعتيم (Overlay) */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+}
+
 .menu-btn {
-  display: none;
-  font-size: 30px;
-  cursor: pointer;
-  background: none;
-  border: none;
+    background: #2a4365; color: #ebf8ff; border: none;
+    padding: 14px; margin-bottom: 10px; border-radius: 10px;
+    cursor: pointer; text-align: right; font-size: 1em;
+    transition: 0.3s; display: flex; align-items: center; gap: 10px;
+    width: 100%;
 }
-        .menu-btn:hover { background: #3182ce; }
-        .menu-btn.active { background: #4299e1; font-weight: bold; }
 
-        .home-btn { 
-            margin-top: auto; padding: 12px; 
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            color: white; text-decoration: none; border-radius: 10px; text-align: center;
-        }
+.menu-btn:hover { background: #3182ce; }
+.menu-btn.active { background: #4299e1; font-weight: bold; }
 
-        .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
-        .display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .active-card { display: block; }
+.main-content { flex: 1; padding: 20px; position: relative; overflow: hidden; }
+.display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; }
+.active-card { display: block; }
 
-        #quiz-timer {
-            background: #e74c3c; color: white; padding: 10px 20px;
-            border-radius: 8px; font-weight: bold; position: sticky; top: 0; z-index: 10;
-            display: inline-block; margin-bottom: 20px;
-        }
+/* إعدادات الموبايل */
+@media (max-width: 768px) {
+    .mobile-nav-toggle { display: block; } /* إظهار الزر */
+    
+    .sidebar {
+        position: fixed;
+        right: -300px; /* إخفاء خارج الشاشة */
+        top: 0;
+        height: 100vh;
+    }
+    
+    .sidebar.open {
+        right: 0; /* انزلاق للداخل */
+    }
+    
+    .overlay.active {
+        display: block; /* تفعيل التعتيم */
+    }
 
-        .question-item { background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #4299e1; transition: 0.3s; }
-        .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
-        .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
-        .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
-        
-        iframe, object { width: 100%; height: 100%; border: none; border-radius: 10px; }
-/* --- تعديلات الموبايل --- */
-@media screen and (max-width: 768px) {
-  .sidebar {
-    width: 0; /* إخفاء القائمة تماماً في البداية */
-  }
-  .menu-btn {
-    display: block; /* إظهار زر القائمة في الموبايل */
-  }
-  #main {
-    margin-right: 0;
-  }
+    .main-content {
+        padding: 60px 10px 10px 10px; /* مسافة للزر العلوي */
+    }
 }
 
     </style>
 </head>
 <body>
+<button class="mobile-nav-toggle" onclick="toggleSidebar()">☰ القائمة</button>
 
+<div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
     <div class="sidebar">
         <h2>🌊 الحركة الموجية</h2>
         <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
@@ -183,19 +198,31 @@
                         <div id="feedback-${i}" class="feedback-text"></div>
                     </div>
 					
-   function toggleSidebar() {
-       var sidebar = document.getElementById("mySidebar");
-       // إذا كانت القائمة مغلقة (عرضها 0)، افتحها
-        if (sidebar.style.width === "250px") {
-         sidebar.style.width = "0";
-         } else {
-    sidebar.style.width = "250px";
-  }
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
 }
-                `;
-            }).join('');
-        }
 
+function showContent(cardId, btn) { 
+    // 1. إخفاء جميع الكروت
+    const cards = document.querySelectorAll('.display-card');
+    cards.forEach(card => card.classList.remove('active-card'));
+    
+    // 2. إظهار الكارت المطلوب
+    document.getElementById(cardId).classList.add('active-card');
+    
+    // 3. تحديث شكل الأزرار
+    const buttons = document.querySelectorAll('.menu-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // 4. إغلاق القائمة تلقائياً في الموبايل فقط بعد الاختيار
+    if (window.innerWidth <= 768) {
+        toggleSidebar();
+    }
+}
         function startTimer() {
             timerInstance = setInterval(() => {
                 let min = Math.floor(timeLeft / 60);
