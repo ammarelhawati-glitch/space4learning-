@@ -95,9 +95,13 @@
             }
             
             .main-content { 
-                width: 100%; 
-                padding: 70px 15px 20px 15px; /* مسافة للزر العلوي */
-            }
+        padding: 60px 5px 10px 5px; /* تقليل المسافات الجانبية من 15px إلى 5px */
+        width: 100%;
+        overflow-x: hidden; /* منع التمرير الأفقي المزعج */
+		.display-card {
+        padding: 10px; /* تقليل الفراغ الداخلي للكارت */
+    }
+    } 
     </style>
 </head>
 <body>
@@ -192,13 +196,29 @@
             sidebar.classList.toggle('open');
             overlay.classList.toggle('active');
         }
-        function showContent(id, btn) {
-            document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
-            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active-card');
-            btn.classList.add('active');
-            if(id === 'quiz-div' && !quizLoaded) { prepareAndLoadQuiz(); startTimer(); quizLoaded = true; }
-        }
+    function showContent(id, btn) {
+    // 1. إخفاء جميع الكروت وإزالة حالة النشاط من الأزرار
+    document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
+    document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+    
+    // 2. إظهار الكرت المختار وتنشيط الزر
+    document.getElementById(id).classList.add('active-card');
+    btn.classList.add('active');
+
+    // 3. الجزء المسؤول عن الإغلاق التلقائي:
+    // نتحقق إذا كانت الشاشة صغيرة والقائمة مفتوحة حالياً، فنقوم بإغلاقها
+    const sidebar = document.getElementById('sidebar');
+    if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+        toggleSidebar(); 
+    }
+
+    // 4. تشغيل الاختبار والمؤقت إذا تم اختيار قسم الاختبار
+    if(id === 'quiz-div' && !quizLoaded) { 
+        prepareAndLoadQuiz(); 
+        startTimer(); 
+        quizLoaded = true; 
+    }
+}
 // إغلاق القائمة في الموبايل تلقائياً بعد الاختيار
             if (window.innerWidth <= 768) {
                 toggleSidebar();
