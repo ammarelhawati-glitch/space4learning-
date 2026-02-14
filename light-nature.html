@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الضوء</title>
+    <style>
+             /* 1. التنسيقات العامة */
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; display: flex; height: 100vh; 
+            background-color: #f0f4f8; overflow: hidden;
+            direction: rtl;
+        }
+
+        /* 2. القائمة الجانبية (Sidebar) */
+        .sidebar {
+            width: 300px; background-color: #1e3a5f; color: white;
+            display: flex; flex-direction: column; padding: 20px;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+            transition: 0.4s ease; z-index: 2000; 
+        }
+        .sidebar h2 { 
+            text-align: center; font-size: 1.3em; color: #90cdf4; 
+            border-bottom: 1px solid #2c5282; padding-bottom: 15px; 
+        }
+
+        /* 3. شريط الموبايل العلوي (Header) */
+        .mobile-header { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
+            background: #1e3a5f; color: white; align-items: center; 
+            justify-content: center; z-index: 1000; 
+            font-weight: 900; font-size: 1.4em; letter-spacing: 0.5px;
+        }
+        .mobile-nav-toggle { 
+            display: none; position: fixed; top: 15px; right: 15px; 
+            z-index: 1100; cursor: pointer; background: transparent; 
+            color: white; border: none; font-size: 26px; 
+        }
+        .overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; 
+            height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; 
+        }
+
+        /* 4. أزرار القائمة */
+        .menu-btn { 
+            background: #2a4365; color: #ebf8ff; border: none; 
+            padding: 14px; margin-bottom: 10px; border-radius: 10px; 
+            cursor: pointer; text-align: right; font-size: 1em; 
+            transition: 0.3s; width: 100%;
+        }
+        .menu-btn:hover { background: #3182ce; }
+        .menu-btn.active { background: #4299e1; font-weight: bold; }
+        .home-btn { 
+            margin-top: auto; padding: 12px; 
+            background: linear-gradient(135deg, #48bb78, #38a169); 
+            color: white; text-decoration: none; border-radius: 10px; text-align: center; 
+        }
+
+        /* 5. منطقة المحتوى الرئيسي */
+        .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
+        .display-card { 
+            width: 100%; height: 100%; background: white; border-radius: 15px; 
+            display: none; overflow-y: auto; padding: 20px; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
+        }
+        .active-card { display: block; }
+        iframe { width: 100%; height: 100%; border: none; border-radius: 10px; }
+
+        /* 6. الاختبار والمؤقت */
+        #quiz-timer { 
+            background: #e74c3c; color: white; padding: 10px 20px; 
+            border-radius: 8px; font-weight: bold; position: sticky; 
+            top: 0; z-index: 10; display: inline-block; margin-bottom: 20px; 
+        }
+        .question-item { 
+            background: #f7fafc; padding: 15px; border-radius: 10px; 
+            margin-bottom: 15px; border-right: 5px solid #4299e1; 
+        }
+        .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
+        .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
+        .feedback-text { font-weight: bold; margin-top: 10px; display: none; color: #c0392b; }
+
+        /* 7. استجابة الموبايل */
+        @media (max-width: 768px) {
+            body { height: auto; overflow-y: auto; }
+            .sidebar { position: fixed; right: -310px; top: 0; height: 100vh; width: 280px; }
+            .sidebar.open { right: 0; }
+            .mobile-header { display: flex; }
+            .mobile-nav-toggle { display: block; }
+            .overlay.active { display: block; }
+            
+            /* تعديل الحشو لضمان عدم تداخل المحتوى مع الهيدر العريض */
+            .main-content { padding: 75px 8px 10px 8px; height: calc(100vh - 10px); }
+            .display-card { padding: 12px; border-radius: 10px; height: 100%; }
+            
+            /* تكبير الشاشات في الموبايل */
+            #pdf-div, #video-div, #lab-div { height: 82vh; }
+            #result-box { margin-bottom: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-header">space4learn</div>
+    <button class="mobile-nav-toggle" onclick="toggleSidebar()">☰</button>
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar"id="sidebar">>
+        <h2>💡الضوء وظواهره</h2>
+        <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
+        <button class="menu-btn" onclick="showContent('video-div', this)">🎬 تجربة اليوتيوب</button>
+        <button class="menu-btn" onclick="showContent('lab-div', this)">🧪 المختبر الافتراضي</button>
+        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 اختبار ال40 سؤال</button>
+        <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
+    </div>
+
+    <div class="main-content">
+        <div id="pdf-div" class="display-card active-card">
+           <div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https://www.canva.com/design/DAG71_ybA-8/EiE3_UzwRoCM-yqG0-J6xQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+</div>
+<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAG71_ybA-8&#x2F;EiE3_UzwRoCM-yqG0-J6xQ&#x2F;view?utm_content=DAG71_ybA-8&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">light</a> by Ammar Barakat
+        </div>
+
+        <div id="video-div" class="display-card">
+            <iframe src="https://www.youtube.com/embed/w2s2fZr8sqQ" allowfullscreen></iframe>
+        </div>
+
+        <div id="lab-div" class="display-card">
+            <iframe src="https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_ar.html"></iframe>
+        </div>
+
+        <div id="quiz-div" class="display-card">
+            <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
+            <h3>📝 اختبار الضوء -الزمن 10 دقائق</h3>
+            <div id="quiz-container"></div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let timerInstance;
+        let timeLeft = 600; 
+        let quizLoaded = false;
+        let shuffledQuizData = [];
+
+        const originalQuizData = [
+    { q: "الأجسام التي تولد الضوء من ذاتها مثل النجوم تسمى مصادر:", a: "ذاتية (مضيئة)", options: ["غير مضيئة", "ذاتية (مضيئة)", "عاكسة", "شفافة"] },
+    { q: "الأجسام التي نراها نتيجة سقوط الضوء عليها وانعكاسه منها تسمى:", a: "مصادر غير مضيئة", options: ["مصادر مضيئة", "مصادر حرارية", "مصادر غير مضيئة", "مصادر نووية"] },
+    { q: "يصدر الضوء من الشمس بفعل:", a: "الاندماج النووي", options: ["الاحتراق الكيميائي", "الاندماج النووي", "تسخين التنجستن", "الاحتكاك"] },
+    { q: "يُفرغ الغلاف الزجاجي للمصباح من الهواء لمنع تفاعل السلك الساخن مع:", a: "الأكسجين", options: ["النيتروجين", "الهيدروجين", "الأكسجين", "ثاني أكسيد الكربون"] },
+    { q: "يتحول جزء من الطاقة الكهربائية في المصباح إلى ضوء بينما يتحول الباقي إلى:", a: "حرارة", options: ["صوت", "حركة", "حرارة", "طاقة نووية"] },
+    { q: "العالم المسلم الذي أثبت أن الرؤية تتم بانعكاس الضوء من الأجسام للعين هو:", a: "الحسن بن الهيثم", options: ["ابن سينا", "الحسن بن الهيثم", "الفارابي", "الكندي"] },
+    { q: "صاحب النظرية الجسيمية الذي اعتبر الضوء فيضاً من الجسيمات هو:", a: "نيوتن", options: ["هايجنز", "نيوتن", "ماكسويل", "بلانك"] },
+    { q: "فشلت النظرية الجسيمية لنيوتن في تفسير ظاهرة:", a: "حيود الضوء", options: ["الانعكاس", "الانكسار", "حيود الضوء", "الظلال"] },
+    { q: "العالم الذي قال أن الضوء عبارة عن موجات تنتشر في وسط 'الأثير' هو:", a: "هايجنز", options: ["نيوتن", "هايجنز", "أينشتاين", "هيرتز"] },
+    { q: "قاعدة هايجنز تنص على أن أي نقطة في صدر الموجة تعتبر:", a: "مصدراً ضوئياً جديداً", options: ["نقطة امتصاص", "مصدراً ضوئياً جديداً", "وسطاً عازلاً", "ثقباً أسود"] },
+    { q: "يسمى السطح الذي تتواجد به جميع النقاط التي لها نفس البعد عن مركز التذبذب:", a: "صدر الموجة", options: ["طول الموجة", "صدر الموجة", "تردد الموجة", "سعة الموجة"] },
+    { q: "يكون صدر الموجة في حالة موجات الضوء في الأبعاد الثلاثة على شكل:", a: "كروي", options: ["مستوٍ", "اسطواني", "كروي", "مربع"] },
+    { q: "العلاقة الرياضية لسرعة الضوء (ع) هي:", a: "ع = ذ × λ", options: ["ع = ذ ÷ λ", "ع = ذ × λ", "ذ = ع × λ", "λ = ذ × ع"] },
+    { q: "وحدة الأنجستروم تساوي:", a: "10^-10 متر", options: ["10^-8 متر", "10^-9 متر", "10^-10 متر", "10^-12 متر"] },
+    { q: "المسافة بين قمتين متتاليتين أو قاعين متتاليين تسمى:", a: "طول الموجة", options: ["التردد", "طول الموجة", "السرعة", "السعة"] },
+    { q: "تبلغ أقصى سرعة للضوء في الفراغ حوالي:", a: "3 × 10^8 م/ث", options: ["3 × 10^6 م/ث", "3 × 10^8 م/ث", "2 × 10^8 م/ث", "300,000 م/ث"] },
+    { q: "عند انتقال الضوء من الهواء إلى الزجاج فإن سرعته:", a: "تقل", options: ["تزداد", "تقل", "تبقى ثابتة", "تتضاعف"] },
+    { q: "الخاصية التي لا تتغير عند انتقال الضوء بين وسطين مختلفين هي:", a: "التردد (ذ)", options: ["السرعة (ع)", "الطول الموجي (λ)", "التردد (ذ)", "الاتجاه"] },
+    { q: "العالم الذي وضع نظرية الكم عام 1900م هو:", a: "ماكس بلانك", options: ["أينشتاين", "ماكس بلانك", "هيرتز", "نيوتن"] },
+    { q: "طاقة الكم (ط) تتناسب طردياً مع:", a: "التردد (ذ)", options: ["الطول الموجي (λ)", "التردد (ذ)", "المسافة", "الزمن"] },
+    { q: "القيمة التقريبية لثابت بلانك (هـ) هي:", a: "6.625 × 10^-34", options: ["3 × 10^8", "6.625 × 10^-34", "1.6 × 10^-19", "9.1 × 10^-31"] },
+    { q: "تسمى دفعات الطاقة المنفصلة المكونة للضوء بـ:", a: "الفوتونات", options: ["الإلكترونات", "البروتونات", "الفوتونات", "النيوترونات"] },
+    { q: "العلم الذي يفسر الظواهر الذرية وسلوك الأجسام الدقيقة يسمى:", a: "ميكانيكا الكم", options: ["الميكانيكا الكلاسيكية", "ميكانيكا الكم", "الديناميكا", "الفيزياء الفلكية"] },
+    { q: "شدة شعاع الضوء تساوي طاقة الفوتون الواحد مضروبة في:", a: "عدد الفوتونات", options: ["التردد", "الطول الموجي", "عدد الفوتونات", "ثابت بلانك"] },
+    { q: "الأجهزة التي تحول ضوء الشمس إلى طاقة كهربائية تسمى:", a: "خلايا شمسية", options: ["مولدات", "خلايا شمسية", "محولات", "بطاريات جافة"] },
+    { q: "العالم الذي لاحظ انبعاث إلكترونات عند سقوط أشعة فوق بنفسجية على معدن هو:", a: "هيرتز", options: ["أينشتاين", "هيرتز", "نيوتن", "بلانك"] },
+    { q: "في تجربة هولواش، يفقد لوح الزنك شحنته السالبة عند تعرضه لـ:", a: "الأشعة فوق البنفسجية", options: ["الضوء الأحمر", "الحرارة", "الأشعة فوق البنفسجية", "الموجات الصوتية"] },
+    { q: "تسمى عملية تحرر الإلكترونات من سطح المعدن بفعل الضوء:", a: "الظاهرة الكهروضوئية", options: ["الاندماج", "التأين", "الظاهرة الكهروضوئية", "الاشعاع"] },
+    { q: "نجح العالم أينشتاين في تفسير الظاهرة الكهروضوئية باستخدام:", a: "نظرية الكم لبلانك", options: ["النظرية الموجية", "نظرية الكم لبلانك", "النظرية الجسيمية", "قوانين نيوتن"] },
+    { q: "أقل طاقة لازمة لتحرير الإلكترون من سطح المعدن تسمى:", a: "دالة الشغل (ɸ)", options: ["طاقة الحركة", "دالة الشغل (ɸ)", "ثابت بلانك", "التردد الحرج"] },
+    { q: "تسمى الإلكترونات المتحررة من المعدن بفعل الضوء بـ:", a: "إلكترونات ضوئية", options: ["أيونات", "فوتونات", "إلكترونات ضوئية", "نيوترونات"] },
+    { q: "إذا سقط فوتون طاقته أكبر من دالة الشغل، يظهر الفرق في الطاقة على شكل:", a: "طاقة حركة للإلكترون", options: ["حرارة", "ضوء منعكس", "طاقة حركة للإلكترون", "صوت"] },
+    { q: "العلاقة (طح = هـ ذ - ɸ) تمثل حساب:", a: "طاقة الحركة للإلكترون", options: ["طاقة الفوتون", "دالة الشغل", "طاقة الحركة للإلكترون", "سرعة الضوء"] },
+    { q: "تعتبر الشمس المصدر الرئيسي الذي يمد الأرض بـ:", a: "الطاقة", options: ["الكهرباء", "المواد الكيميائية", "الطاقة", "النيوترونات"] },
+    { q: "وحدة قياس التردد (ذ) هي:", a: "الهيرتز", options: ["الجول", "المتر", "الهيرتز", "الثانية"] },
+    { q: "عند سقوط ضوء تردده أقل من التردد الحرج للمعدن:", a: "لا تنبعث إلكترونات", options: ["تنبعث إلكترونات سريعة", "تنبعث إلكترونات بطيئة", "لا تنبعث إلكترونات", "يتحلل المعدن"] },
+    { q: "طاقة الفوتون (ط) تساوي:", a: "هـ × ذ", options: ["هـ ÷ ذ", "هـ × ذ", "ذ ÷ هـ", "هـ + ذ"] },
+    { q: "الرمز (λ) في قوانين الضوء يشير إلى:", a: "الطول الموجي", options: ["التردد", "السرعة", "الطول الموجي", "ثابت بلانك"] },
+    { q: "يسمى العالم الألماني الذي فسر الظاهرة الكهروضوئية عام 1905م:", a: "أينشتاين", options: ["بلانك", "أينشتاين", "هيرتز", "ماكسويل"] },
+    { q: "في المصباح الكهربائي، يتحول السلك الساخن لونه إلى الأبيض عند درجة حرارة:", a: "مرتفعة جداً", options: ["منخفضة", "متوسطة", "مرتفعة جداً", "صفر مئوية"] }        ];
+
+         function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('overlay');
+            sb.classList.toggle('open');
+            ov.classList.toggle('active');
+        }
+
+        function showContent(id, btn) {
+            document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            
+            // التحكم الاحترافي في اليوتيوب
+            const ytIframe = document.getElementById('yt-player');
+            if (ytIframe && ytIframe.contentWindow) {
+                if (id === 'video-div') {
+                    ytIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                } else {
+                    ytIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                }
+            }
+
+            document.getElementById(id).classList.add('active-card');
+            btn.classList.add('active');
+            
+            if (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) {
+                toggleSidebar();
+            }
+
+            if (id === 'quiz-div' && !quizLoaded) { 
+                prepareAndLoadQuiz(); 
+                startTimer(); 
+                quizLoaded = true; 
+            }
+        }
+
+        function prepareAndLoadQuiz() {
+            shuffledQuizData = shuffle([...originalQuizData]);
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = shuffledQuizData.map((item, i) => `
+                <div class="question-item" id="q-item-${i}">
+                    <p><b>${i+1}. ${item.q}</b></p>
+                    ${shuffle([...item.options]).map(opt => `
+                        <label style="display:block; margin:8px 0; cursor:pointer;">
+                            <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                    <div id="feedback-${i}" class="feedback-text"></div>
+                </div>
+            `).join('');
+        }
+
+        function startTimer() {
+            timerInstance = setInterval(() => {
+                let min = Math.floor(timeLeft / 60);
+                let sec = timeLeft % 60;
+                document.getElementById('timer-display').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
+                if (timeLeft-- <= 0) { clearInterval(timerInstance); calculateScore(false); }
+            }, 1000);
+        }
+
+        function calculateScore(manual) {
+            if(manual) clearInterval(timerInstance);
+            let score = 0;
+            shuffledQuizData.forEach((item, i) => {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                const qDiv = document.getElementById(`q-item-${i}`);
+                const fDiv = document.getElementById(`feedback-${i}`);
+                if (sel && sel.value === item.a) { 
+                    score++; qDiv.classList.add('correct-answer'); 
+                } else { 
+                    qDiv.classList.add('wrong-answer'); 
+                    fDiv.style.display = "block"; 
+                    fDiv.innerHTML = `❌ الإجابة الصحيحة: ${item.a}`; 
+                }
+            });
+            const res = document.getElementById('result-box');
+            res.style.display = "block";
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من 20`;
+            res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
+            res.style.color = score >= 10 ? "#155724" : "#721c24";
+            document.getElementById('submit-quiz-btn').disabled = true;
+            document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
+            setTimeout(() => res.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+        }
+    </script>
+		<div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999; direction: rtl;">
+ by:   <b>Ammar Barakat  </b>
+    </div>
+</body>
+</html>
