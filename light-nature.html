@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الضوء</title>
+    <title>الضوء </title>
     <style>
-             /* 1. التنسيقات العامة */
+        /* 1. التنسيقات العامة */
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
@@ -14,7 +14,7 @@
             direction: rtl;
         }
 
-        
+        /* 2. القائمة الجانبية (Sidebar) */
         .sidebar {
             width: 300px; background-color: #1e3a5f; color: white;
             display: flex; flex-direction: column; padding: 20px;
@@ -26,11 +26,11 @@
             border-bottom: 1px solid #2c5282; padding-bottom: 15px; 
         }
 
-       
+        /* 3. شريط الموبايل العلوي (Header) */
         .mobile-header { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
             background: #1e3a5f; color: white; align-items: center; 
-            justify-content: flex-start; z-index: 1000; 
+            justify-content: center; z-index: 1000; 
             font-weight: 900; font-size: 1.4em; letter-spacing: 0.5px;
         }
         .mobile-nav-toggle { 
@@ -91,11 +91,11 @@
             .mobile-nav-toggle { display: block; }
             .overlay.active { display: block; }
             
-           
+            /* تعديل الحشو لضمان عدم تداخل المحتوى مع الهيدر العريض */
             .main-content { padding: 75px 8px 10px 8px; height: calc(100vh - 10px); }
             .display-card { padding: 12px; border-radius: 10px; height: 100%; }
             
-          
+            /* تكبير الشاشات في الموبايل */
             #pdf-div, #video-div, #lab-div { height: 82vh; }
             #result-box { margin-bottom: 100px; }
         }
@@ -284,5 +284,6 @@
 </body>
 
 </html>
+
 
 
