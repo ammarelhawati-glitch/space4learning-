@@ -191,7 +191,7 @@
     { q: "يسمى العالم الألماني الذي فسر الظاهرة الكهروضوئية عام 1905م:", a: "أينشتاين", options: ["بلانك", "أينشتاين", "هيرتز", "ماكسويل"] },
     { q: "في المصباح الكهربائي، يتحول السلك الساخن لونه إلى الأبيض عند درجة حرارة:", a: "مرتفعة جداً", options: ["منخفضة", "متوسطة", "مرتفعة جداً", "صفر مئوية"] }        ];
 
-         function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
@@ -270,20 +270,21 @@
             });
             const res = document.getElementById('result-box');
             res.style.display = "block";
-            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من 40`;
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من 20`;
             res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
             res.style.color = score >= 10 ? "#155724" : "#721c24";
             document.getElementById('submit-quiz-btn').disabled = true;
             document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
             setTimeout(() => res.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
-        }
-    </script>
+        }   
+	</script>
 		<div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999; direction: rtl;">
  by:   <b>Ammar Barakat  </b>
     </div>
 </body>
 
 </html>
+
 
 
 
