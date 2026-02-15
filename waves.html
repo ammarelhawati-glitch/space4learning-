@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فضاء للتعلم | الحركة الموجية</title>
+    <title>الحركة الموجية</title>
     <style>
         /* 1. التنسيقات العامة */
         * { box-sizing: border-box; }
@@ -26,12 +26,12 @@
             border-bottom: 1px solid #2c5282; padding-bottom: 15px; 
         }
 
-        /* 3. شريط الموبايل العلوي (Header) */
+        /* 3. شريط الموبايل العلوي */
         .mobile-header { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
             background: #1e3a5f; color: white; align-items: center; 
             justify-content: center; z-index: 1000; 
-            font-weight: 900; font-size: 1.4em; letter-spacing: 0.5px;
+            font-weight: 900; font-size: 1.4em;
         }
         .mobile-nav-toggle { 
             display: none; position: fixed; top: 15px; right: 15px; 
@@ -82,22 +82,13 @@
         .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
         .feedback-text { font-weight: bold; margin-top: 10px; display: none; color: #c0392b; }
 
-        /* 7. استجابة الموبايل */
         @media (max-width: 768px) {
-            body { height: auto; overflow-y: auto; }
             .sidebar { position: fixed; right: -310px; top: 0; height: 100vh; width: 280px; }
             .sidebar.open { right: 0; }
             .mobile-header { display: flex; }
             .mobile-nav-toggle { display: block; }
             .overlay.active { display: block; }
-            
-            /* تعديل الحشو لضمان عدم تداخل المحتوى مع الهيدر العريض */
             .main-content { padding: 75px 8px 10px 8px; height: calc(100vh - 10px); }
-            .display-card { padding: 12px; border-radius: 10px; height: 100%; }
-            
-            /* تكبير الشاشات في الموبايل */
-            #pdf-div, #video-div, #lab-div { height: 82vh; }
-            #result-box { margin-bottom: 100px; }
         }
     </style>
 </head>
@@ -133,8 +124,8 @@
         <div id="quiz-div" class="display-card">
             <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
             <h3>📝 اختبار موجات</h3>
-            <div id="quiz-container"></div>
-            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
+            <div id="quiz-container">جارٍ تحميل الأسئلة...</div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:20px;">إرسال ومعرفة الأخطاء</button>
             <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 20px; display: none;"></div>
         </div>
     </div>
@@ -145,73 +136,70 @@
         let quizLoaded = false;
         let shuffledQuizData = [];
 
-        const originalQuizData = [
-            { q: "الموجات هي اضطراب ينتقل في الوسط ويقوم بنقل ....... في اتجاه انتشارها:", options: ["المادة", "الطاقة", "الجزيئات", "الكتلة"], correct: "الطاقة" },
-            { q: "الموجات التي تحتاج لوسط مادي لانتقالها تسمى موجات:", options: ["كهرومغناطيسية", "ميكانيكية", "فراغية", "ضوئية"], correct: "ميكانيكية" },
-            { q: "تهتز جزيئات الوسط في اتجاه عمودي على اتجاه انتشار الموجة في الموجات:", options: ["الطولية", "المستعرضة", "الصوتية", "الزلزالية الأولية"], correct: "المستعرضة" },
-            { q: "تتكون الموجة المستعرضة من تتابعات من:", options: ["تضاغطات وتخلخلات", "قمم وقيعان", "عقد وبطون", "زوايا مماسية"], correct: "قمم وقيعان" },
-            { q: "المسافة بين قمتين متتاليتين أو قاعين متتاليين تسمى:", options: ["سعة الموجة", "التردد", "طول الموجة (λ)", "الزمن الدوري"], correct: "طول الموجة (λ)" },
-            { q: "في الموجات الطولية، تهتز جزيئات الوسط في ....... اتجاه انتشار الموجة:", options: ["نفس", "عكس", "اتجاه عمودي على", "زاوية حادة مع"], correct: "نفس" },
-            { q: "تتكون الموجات الطولية من تتابعات من:", options: ["قمم وقيعان", "تضاغطات وتخلخلات", "أشعة كهرومغناطيسية", "نبضات ضوئية"], correct: "تضاغطات وتخلخلات" },
-            { q: "طول الموجة الطولية هو المسافة بين مركزي تضاغطين متتاليين أو مركزي:", options: ["قمة وقاع", "تخلخلين متتاليين", "عقدة وبطن", "موجتين"], correct: "تخلخلين متتاليين" },
-            { q: "أقصى إزاحة تصل إليها جزيئات الوسط بعيداً عن موضع سكونها هي:", options: ["طول الموجة", "سعة الموجة (أ)", "التردد", "الطور"], correct: "سعة الموجة (أ)" },
-            { q: "عدد الموجات الكاملة التي تمر بنقطة معينة في الثانية الواحدة يسمى:", options: ["الزمن الدوري", "السرعة", "التردد (ذ)", "السعة"], correct: "التردد (ذ)" },
-            { q: "وحدة قياس التردد هي الهيرتز، وهي تكافئ:", options: ["ثانية / دورة", "دورة / ثانية", "متر / ثانية", "نيوتن"], correct: "دورة / ثانية" },
-            { q: "الزمن الذي يستغرقه الجسم لعمل موجة واحدة كاملة هو:", options: ["التردد", "الزمن الدوري (ز)", "السرعة", "الإزاحة"], correct: "الزمن الدوري (ز)" },
-            { q: "قانون سرعة انتشار الموجة (ع) يعطى بالعلاقة:", options: ["ع = λ × ذ", "ع = λ / ذ", "ع = ذ / λ", "ع = λ + ذ"], correct: "ع = λ × ذ" },
-            { q: "عندما تنتقل الموجة بين وسطين مختلفين، يظل ....... ثابتاً:", options: ["السرعة", "الطول الموجي", "التردد", "الاتجاه"], correct: "التردد" },
-            { q: "تعتبر موجات الضوء والراديو أمثلة للموجات:", options: ["الطولية", "الميكانيكية", "الكهرومغناطيسية", "الصوتية"], correct: "الكهرومغناطيسية" },
-            { q: "إذا زاد تردد الموجة للضعف في نفس الوسط، فإن طولها الموجي:", options: ["يزداد للضعف", "يقل للنصف", "يظل ثابتاً", "يتضاعف 4 مرات"], correct: "يقل للنصف" },
-            { q: "الموجات فوق السمعية تستخدم لتفتيت الحصى لأنها تنقل طاقة:", options: ["حرارية", "اهتزازية", "كيميائية", "نووية"], correct: "اهتزازية" },
-            { q: "المسافة التي تقطعها الموجة في الثانية الواحدة تسمى:", options: ["التردد", "السرعة", "طول الموجة", "الزمن الدوري"], correct: "السرعة" },
-            { q: "تتكون الموجة الطولية في الزنبرك على شكل:", options: ["عمودية", "تضاغطات وتخلخلات", "قمم وقيعان", "ثابتة"], correct: "تضاغطات وتخلخلات" },
-            { q: "الموجة التي لا تسبب انتقالاً لجزيئات الوسط هي:", options: ["الميكانيكية", "الكهرومغناطيسية", "جميع ما سبق", "لا شيء مما سبق"], correct: "جميع ما سبق" }
-        ];
-
         function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
         function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            const ov = document.getElementById('overlay');
-            sb.classList.toggle('open');
-            ov.classList.toggle('active');
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
         }
 
         function showContent(id, btn) {
             document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
             
-            // التحكم الاحترافي في اليوتيوب
             const ytIframe = document.getElementById('yt-player');
             if (ytIframe && ytIframe.contentWindow) {
-                if (id === 'video-div') {
-                    ytIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                } else {
-                    ytIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                }
+                const cmd = id === 'video-div' ? 'playVideo' : 'pauseVideo';
+                ytIframe.contentWindow.postMessage(`{"event":"command","func":"${cmd}","args":""}`, '*');
             }
 
             document.getElementById(id).classList.add('active-card');
             btn.classList.add('active');
             
-            if (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) {
-                toggleSidebar();
+            if (window.innerWidth <= 768) {
+                const sb = document.getElementById('sidebar');
+                if(sb.classList.contains('open')) toggleSidebar();
             }
 
             if (id === 'quiz-div' && !quizLoaded) { 
-                prepareAndLoadQuiz(); 
-                startTimer(); 
+                fetchAndLoadQuiz(); 
                 quizLoaded = true; 
             }
         }
 
-        function prepareAndLoadQuiz() {
-            shuffledQuizData = shuffle([...originalQuizData]);
+        async function fetchAndLoadQuiz() {
+            try {
+                const response = await fetch('questions.json');
+                if (!response.ok) throw new Error("فشل التحميل");
+                const allData = await response.json();
+
+                // فلترة الأسئلة التي تتبع موضوع "الموجات" فقط
+                const waveQuestions = allData.filter(item => item.topic === "الموجات");
+
+                if (waveQuestions.length === 0) {
+                    document.getElementById('quiz-container').innerHTML = "لا توجد أسئلة موجات حالياً.";
+                    return;
+                }
+
+                shuffledQuizData = shuffle(waveQuestions.map(item => ({
+                    q: item.question,
+                    options: shuffle([item.option1, item.option2, item.option3, item.option4]),
+                    correct: item.answer
+                }))).slice(0, 20); // نأخذ 20 سؤالاً فقط
+
+                renderQuiz();
+                startTimer();
+            } catch (error) {
+                document.getElementById('quiz-container').innerHTML = "حدث خطأ أثناء جلب الأسئلة.";
+            }
+        }
+
+        function renderQuiz() {
             const container = document.getElementById('quiz-container');
             container.innerHTML = shuffledQuizData.map((item, i) => `
                 <div class="question-item" id="q-item-${i}">
                     <p><b>${i+1}. ${item.q}</b></p>
-                    ${shuffle([...item.options]).map(opt => `
+                    ${item.options.map(opt => `
                         <label style="display:block; margin:8px 0; cursor:pointer;">
                             <input type="radio" name="q${i}" value="${opt}"> ${opt}
                         </label>
@@ -247,9 +235,8 @@
             });
             const res = document.getElementById('result-box');
             res.style.display = "block";
-            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من 20`;
-            res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
-            res.style.color = score >= 10 ? "#155724" : "#721c24";
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من ${shuffledQuizData.length}`;
+            res.style.background = score >= (shuffledQuizData.length/2) ? "#d4edda" : "#f8d7da";
             document.getElementById('submit-quiz-btn').disabled = true;
             document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
             setTimeout(() => res.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
