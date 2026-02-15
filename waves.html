@@ -241,6 +241,38 @@
             document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
             setTimeout(() => res.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
         }
+        function calculateScore(manual) {
+            if(manual) clearInterval(timerInstance);
+            let score = 0;
+            shuffledQuizData.forEach((item, i) => {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                const qDiv = document.getElementById(`q-item-${i}`);
+                const fDiv = document.getElementById(`feedback-${i}`);
+                if (sel && sel.value === item.correct) { 
+                    score++; qDiv.classList.add('correct-answer'); 
+                } else { 
+                    qDiv.classList.add('wrong-answer'); 
+                    fDiv.style.display = "block"; 
+                    fDiv.innerHTML = `❌ الإجابة الصحيحة: ${item.correct}`; 
+                }
+            });
+
+            const res = document.getElementById('result-box');
+            res.style.display = "block";
+            const resultText = `انتهى الاختبار! نتيجتك هي: ${score} من ${shuffledQuizData.length}`;
+            res.innerHTML = resultText;
+            
+            res.style.background = score >= (shuffledQuizData.length/2) ? "#d4edda" : "#f8d7da";
+            res.style.color = score >= (shuffledQuizData.length/2) ? "#155724" : "#721c24";
+
+            alert(resultText);
+
+            document.getElementById('submit-quiz-btn').disabled = true;
+            document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
+
+            res.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     </script>
 </body>
 </html>
+
