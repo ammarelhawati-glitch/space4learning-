@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الضوء </title>
+    <title>الضوء وظواهره</title>
     <style>
         /* 1. التنسيقات العامة */
         * { box-sizing: border-box; }
@@ -26,12 +26,12 @@
             border-bottom: 1px solid #2c5282; padding-bottom: 15px; 
         }
 
-        /* 3. شريط الموبايل العلوي (Header) */
+        /* 3. شريط الموبايل العلوي */
         .mobile-header { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
             background: #1e3a5f; color: white; align-items: center; 
             justify-content: center; z-index: 1000; 
-            font-weight: 900; font-size: 1.4em; letter-spacing: 0.5px;
+            font-weight: 900; font-size: 1.4em;
         }
         .mobile-nav-toggle { 
             display: none; position: fixed; top: 15px; right: 15px; 
@@ -82,7 +82,6 @@
         .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
         .feedback-text { font-weight: bold; margin-top: 10px; display: none; color: #c0392b; }
 
-        /* 7. استجابة الموبايل */
         @media (max-width: 768px) {
             body { height: auto; overflow-y: auto; }
             .sidebar { position: fixed; right: -310px; top: 0; height: 100vh; width: 280px; }
@@ -90,14 +89,7 @@
             .mobile-header { display: flex; }
             .mobile-nav-toggle { display: block; }
             .overlay.active { display: block; }
-            
-            /* تعديل الحشو لضمان عدم تداخل المحتوى مع الهيدر العريض */
             .main-content { padding: 75px 8px 10px 8px; height: calc(100vh - 10px); }
-            .display-card { padding: 12px; border-radius: 10px; height: 100%; }
-            
-            /* تكبير الشاشات في الموبايل */
-            #pdf-div, #video-div, #lab-div { height: 82vh; }
-            #result-box { margin-bottom: 100px; }
         }
     </style>
 </head>
@@ -105,29 +97,24 @@
     <div class="mobile-header">space4learn</div>
     <button class="mobile-nav-toggle" onclick="toggleSidebar()">☰</button>
     <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
-    <div class="sidebar"id="sidebar">
-        <h2>💡الضوء وظواهره</h2>
+
+    <div class="sidebar" id="sidebar">
+        <h2>💡 الضوء وظواهره</h2>
         <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
         <button class="menu-btn" onclick="showContent('video-div', this)">🎬 تجربة اليوتيوب</button>
         <button class="menu-btn" onclick="showContent('lab-div', this)">🧪 المختبر الافتراضي</button>
-        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 اختبار ال40 سؤال</button>
+        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 الاختبار الذكي</button>
         <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
     </div>
 
     <div class="main-content">
         <div id="pdf-div" class="display-card active-card">
-           <div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%;
- padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
- border-radius: 8px; will-change: transform;">
-  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-    src="https://www.canva.com/design/DAG71_ybA-8/EiE3_UzwRoCM-yqG0-J6xQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-  </iframe>
-</div>
-<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAG71_ybA-8&#x2F;EiE3_UzwRoCM-yqG0-J6xQ&#x2F;view?utm_content=DAG71_ybA-8&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">light</a> by Ammar Barakat
+            <iframe src="https://www.canva.com/design/DAG71_ybA-8/EiE3_UzwRoCM-yqG0-J6xQ/view?embed" allowfullscreen></iframe>
+            <p style="text-align: center; margin-top: 10px; font-weight: bold; color: #1e3a5f;">بواسطة: عمار بركات</p>
         </div>
 
         <div id="video-div" class="display-card">
-            <iframe src="https://www.youtube.com/embed/w2s2fZr8sqQ" allowfullscreen></iframe>
+            <iframe id="yt-player" src="https://www.youtube.com/embed/w2s2fZr8sqQ?enablejsapi=1" allowfullscreen></iframe>
         </div>
 
         <div id="lab-div" class="display-card">
@@ -136,10 +123,10 @@
 
         <div id="quiz-div" class="display-card">
             <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
-            <h3>📝 اختبار الضوء -الزمن 10 دقائق</h3>
-            <div id="quiz-container"></div>
-            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
-            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
+            <h3>📝 اختبار الضوء (سحب آلي للأسئلة)</h3>
+            <div id="quiz-container">جاري تحميل الأسئلة...</div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 20px;">إرسال ومعرفة الأخطاء</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px; display: none;"></div>
         </div>
     </div>
 
@@ -148,87 +135,54 @@
         let timeLeft = 600; 
         let quizLoaded = false;
         let shuffledQuizData = [];
-// دالة لجلب البيانات من ملف JSON الخارجي
-async function prepareAndLoadQuiz() {
-    try {
-        // 1. جلب الملف
-        const response = await fetch('questions.json');
-        if (!response.ok) throw new Error("لم يتم العثور على ملف الأسئلة");
-        
-        const data = await response.json();
 
-        // 2. تحويل البيانات لتناسب نظام الكود الخاص بك
-        const quizFromDatabase = data.map(item => ({
-            q: item.question,
-            options: [item.option1, item.option2, item.option3, item.option4],
-            correct: item.answer
-        }));
+        // دالة خلط المصفوفات
+        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
-        // 3. خلط الأسئلة وعرضها
-        shuffledQuizData = shuffle([...quizFromDatabase]);
-        
-        const container = document.getElementById('quiz-container');
-        container.innerHTML = shuffledQuizData.map((item, i) => `
-            <div class="question-item" id="q-item-${i}">
-                <p><b>${i+1}. ${item.q}</b></p>
-                ${shuffle([...item.options]).map(opt => `
-                    <label style="display:block; margin:8px 0; cursor:pointer;">
-                        <input type="radio" name="q${i}" value="${opt}"> ${opt}
-                    </label>
-                `).join('')}
-                <div id="feedback-${i}" class="feedback-text"></div>
-            </div>
-        `).join('');
-
-    } catch (error) {
-        console.error("خطأ:", error);
-        document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، فشل تحميل الأسئلة من قاعدة البيانات.</p>";
-    }
-}
-function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
-
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            const ov = document.getElementById('overlay');
-            sb.classList.toggle('open');
-            ov.classList.toggle('active');
-        }
-
+        // دالة التبديل بين الأقسام
         function showContent(id, btn) {
             document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
             
-            // التحكم الاحترافي في اليوتيوب
-            const ytIframe = document.getElementById('yt-player');
-            if (ytIframe && ytIframe.contentWindow) {
-                if (id === 'video-div') {
-                    ytIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                } else {
-                    ytIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                }
-            }
-
             document.getElementById(id).classList.add('active-card');
             btn.classList.add('active');
-            
-            if (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) {
-                toggleSidebar();
-            }
 
             if (id === 'quiz-div' && !quizLoaded) { 
-                prepareAndLoadQuiz(); 
-                startTimer(); 
+                fetchAndLoadQuiz(); 
                 quizLoaded = true; 
+            }
+
+            if (window.innerWidth <= 768) toggleSidebar();
+        }
+
+        // دالة جلب البيانات من JSON
+        async function fetchAndLoadQuiz() {
+            try {
+                const response = await fetch('questions.json');
+                if (!response.ok) throw new Error("File not found");
+                const data = await response.json();
+
+                // تحويل البيانات للشكل المطلوب
+                shuffledQuizData = shuffle(data.map(item => ({
+                    q: item.question,
+                    options: shuffle([item.option1, item.option2, item.option3, item.option4]),
+                    correct: item.answer
+                })));
+
+                renderQuiz();
+                startTimer();
+            } catch (error) {
+                document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>خطأ في تحميل الأسئلة. تأكد من وجود ملف questions.json</p>";
             }
         }
 
-        function prepareAndLoadQuiz() {
-            shuffledQuizData = shuffle([...originalQuizData]);
+        // عرض الأسئلة في الصفحة
+        function renderQuiz() {
             const container = document.getElementById('quiz-container');
             container.innerHTML = shuffledQuizData.map((item, i) => `
                 <div class="question-item" id="q-item-${i}">
                     <p><b>${i+1}. ${item.q}</b></p>
-                    ${shuffle([...item.options]).map(opt => `
+                    ${item.options.map(opt => `
                         <label style="display:block; margin:8px 0; cursor:pointer;">
                             <input type="radio" name="q${i}" value="${opt}"> ${opt}
                         </label>
@@ -254,32 +208,34 @@ function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
                 const sel = document.querySelector(`input[name="q${i}"]:checked`);
                 const qDiv = document.getElementById(`q-item-${i}`);
                 const fDiv = document.getElementById(`feedback-${i}`);
-                if (sel && sel.value === item.a) { 
-                    score++; qDiv.classList.add('correct-answer'); 
+                
+                if (sel && sel.value === item.correct) { 
+                    score++; 
+                    qDiv.classList.add('correct-answer'); 
                 } else { 
                     qDiv.classList.add('wrong-answer'); 
                     fDiv.style.display = "block"; 
-                    fDiv.innerHTML = `❌ الإجابة الصحيحة: ${item.a}`; 
+                    fDiv.innerHTML = `❌ الإجابة الصحيحة: ${item.correct}`; 
                 }
             });
+
             const res = document.getElementById('result-box');
             res.style.display = "block";
-            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من 20`;
-            res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
-            res.style.color = score >= 10 ? "#155724" : "#721c24";
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من ${shuffledQuizData.length}`;
+            res.style.background = score >= (shuffledQuizData.length / 2) ? "#d4edda" : "#f8d7da";
             document.getElementById('submit-quiz-btn').disabled = true;
             document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
-            setTimeout(() => res.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
-        }   
-	</script>
-		<div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999; direction: rtl;">
- by:   <b>Ammar Barakat  </b>
+            res.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+    </script>
+
+    <div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999;">
+        by: <b>Ammar Barakat</b>
     </div>
 </body>
-
 </html>
-
-
-
-
-
