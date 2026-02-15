@@ -155,44 +155,53 @@
             if (window.innerWidth <= 768) toggleSidebar();
         }
 
-        // دالة جلب البيانات من JSON
-        async function fetchAndLoadQuiz() {
-            try {
-                const response = await fetch('questions.json');
-                if (!response.ok) throw new Error("File not found");
-                const data = await response.json();
+// دالة جلب الأسئلة المخصصة لـ "الضوء" فقط
+async function fetchAndLoadQuiz() {
+    try {
+        const response = await fetch('questions.json');
+        if (!response.ok) throw new Error("لم يتم العثور على ملف الأسئلة");
+        
+        const allData = await response.json();
 
-                // تحويل البيانات للشكل المطلوب
-                shuffledQuizData = shuffle(data.map(item => ({
-                    q: item.question,
-                    options: shuffle([item.option1, item.option2, item.option3, item.option4]),
-                    correct: item.answer
-                })));
+        // السطر السحري: فلترة الأسئلة لجلب تخصص "الضوء" فقط
+        const lightQuestions = allData.filter(item => item.topic === "الضوء");
 
-                renderQuiz();
-                startTimer();
-            } catch (error) {
-                document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>خطأ في تحميل الأسئلة. تأكد من وجود ملف questions.json</p>";
-            }
+        if (lightQuestions.length === 0) {
+            document.getElementById('quiz-container').innerHTML = "<p>لا توجد أسئلة متوفرة لقسم الضوء حالياً.</p>";
+            return;
         }
 
-        // عرض الأسئلة في الصفحة
-        function renderQuiz() {
-            const container = document.getElementById('quiz-container');
-            container.innerHTML = shuffledQuizData.map((item, i) => `
-                <div class="question-item" id="q-item-${i}">
-                    <p><b>${i+1}. ${item.q}</b></p>
-                    ${item.options.map(opt => `
-                        <label style="display:block; margin:8px 0; cursor:pointer;">
-                            <input type="radio" name="q${i}" value="${opt}"> ${opt}
-                        </label>
-                    `).join('')}
-                    <div id="feedback-${i}" class="feedback-text"></div>
-                </div>
-            `).join('');
-        }
+        // تحويل البيانات وخلطها
+        shuffledQuizData = shuffle(lightQuestions.map(item => ({
+            q: item.question,
+            options: shuffle([item.option1, item.option2, item.option3, item.option4]),
+            correct: item.answer
+        })));
 
-        function startTimer() {
+        renderQuiz(); // استدعاء دالة العرض
+        startTimer(); // بدء المؤقت
+        
+    } catch (error) {
+        console.error("خطأ:", error);
+        document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، فشل تحميل أسئلة الضوء من قاعدة البيانات.</p>";
+    }
+}
+
+// دالة عرض الأسئلة في الصفحة
+function renderQuiz() {
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = shuffledQuizData.map((item, i) => `
+        <div class="question-item" id="q-item-${i}">
+            <p><b>${i+1}. ${item.q}</b></p>
+            ${item.options.map(opt => `
+                <label style="display:block; margin:8px 0; cursor:pointer;">
+                    <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                </label>
+            `).join('')}
+            <div id="feedback-${i}" class="feedback-text"></div>
+        </div>
+    `).join('');
+}        function startTimer() {
             timerInstance = setInterval(() => {
                 let min = Math.floor(timeLeft / 60);
                 let sec = timeLeft % 60;
@@ -239,3 +248,4 @@
     </div>
 </body>
 </html>
+
