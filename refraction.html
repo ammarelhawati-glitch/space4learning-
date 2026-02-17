@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فضاء للتعلم</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; display: flex; height: 100vh; 
+            background-color: #f0f4f8; overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px; background-color: #1e3a5f; color: white;
+            display: flex; flex-direction: column; padding: 20px;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+        }
+
+        .sidebar h2 { 
+            text-align: center; font-size: 1.3em; color: #90cdf4; 
+            border-bottom: 1px solid #2c5282; padding-bottom: 15px;
+        }
+
+        .menu-btn {
+            background: #2a4365; color: #ebf8ff; border: none;
+            padding: 14px; margin-bottom: 10px; border-radius: 10px;
+            cursor: pointer; text-align: right; font-size: 1em;
+            transition: 0.3s; display: flex; align-items: center; gap: 10px;
+        }
+
+        .menu-btn:hover { background: #3182ce; }
+        .menu-btn.active { background: #4299e1; font-weight: bold; }
+
+        .home-btn { 
+            margin-top: auto; padding: 12px; 
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white; text-decoration: none; border-radius: 10px; text-align: center;
+        }
+
+        .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
+        .display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .active-card { display: block; }
+
+        #quiz-timer {
+            background: #e74c3c; color: white; padding: 10px 20px;
+            border-radius: 8px; font-weight: bold; position: sticky; top: 0; z-index: 10;
+            display: inline-block; margin-bottom: 20px;
+        }
+
+        .question-item { background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #4299e1; transition: 0.3s; }
+        .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
+        .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
+        .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
+        
+        iframe, object { width: 100%; height: 100%; border: none; border-radius: 10px; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; position: sticky; top: 0; z-index: 100; }
+            .main-content { padding: 10px; height: 85vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>💎انكسارالضوء </h2>
+        <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄شرح الدرس</button>
+        <button class="menu-btn" onclick="showContent('video-div', this)">🎬 تجربة اليوتيوب</button>
+        <button class="menu-btn" onclick="showContent('lab-div', this)">🧪 المختبر الافتراضي</button>
+        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 اختبار ال30سؤال</button>
+        <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
+    </div>
+
+    <div class="main-content">
+        <div id="pdf-div" class="display-card active-card">
+           <div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https://www.canva.com/design/DAG775k7JIM/a0fde4G58ag5894LFyPRKg/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+</div>
+<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAG775k7JIM&#x2F;a0fde4G58ag5894LFyPRKg&#x2F;view?utm_content=DAG775k7JIM&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">refraction</a> by Ammar Barakat
+        </div>
+
+        <div id="video-div" class="display-card">
+            <iframe src="https://www.youtube.com/embed/w2s2fZr8sqQ" allowfullscreen></iframe>
+        </div>
+
+        <div id="lab-div" class="display-card">
+            <iframe src="https://phet.colorado.edu/sims/html/bending-light/latest/bending-light_ar.html"></iframe>
+        </div>
+
+        <div id="quiz-div" class="display-card">
+            <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
+            <h3>📝 اختبار انكسار الضوء </h3>
+            <div id="quiz-container"></div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let timerInstance;
+        let timeLeft = 600; 
+        let quizLoaded = false;
+        let shuffledQuizData = [];
+
+        const originalQuizData = [
+		// المفاهيم الأساسية
+    { q: "انحراف الضوء عن مساره عند انتقاله بين وسطين شفافين مختلفين في الكثافة يسمى:", a: "الانكسار", options: ["الانعكاس", "الانكسار", "التداخل", "الحيود"] },
+    { q: "تحدث ظاهرة الانكسار بسبب تغير ......... الضوء عند انتقاله بين الأوساط:", a: "سرعة", options: ["تردد", "سرعة", "شدة", "طاقة"] },
+    { q: "النسبة بين سرعة الضوء في الفراغ وسرعته في الوسط تسمى:", a: "معامل الانكسار المطلق", options: ["الزاوية الحرجة", "معامل الانكسار المطلق", "قوة العدسة", "الطول الموجي"] },
+    { q: "أي الأوساط التالية يكون معامل انكساره المطلق هو الأقل دائماً؟", a: "الفراغ (أو الهواء)", options: ["الماء", "الزجاج", "الألماس", "الفراغ (أو الهواء)"] },
+    { q: "عندما ينتقل الضوء من وسط أقل كثافة إلى وسط أكبر كثافة، فإنه ينكسر:", a: "مقترباً من العمود المقام", options: ["مبتعداً عن العمود المقام", "مقترباً من العمود المقام", "على استقامته", "بزاوية 90 درجة"] },
+
+    // قوانين الانكسار
+    { q: "ينص قانون 'سنيل' على أن العلاقة بين زوايا السقوط والانكسار تعتمد على:", a: "معاملات الانكسار للأوساط", options: ["درجة حرارة الوسط", "معاملات الانكسار للأوساط", "نوع مصدر الضوء", "شكل السطح الفاصل"] },
+    { q: "الزاوية المحصورة بين الشعاع المنكسر والعمود المقام تسمى:", a: "زاوية الانكسار", options: ["زاوية السقوط", "زاوية الانعكاس", "زاوية الانكسار", "الزاوية الحرجة"] },
+    { q: "إذا سقط شعاع ضوئي بشكل 'عمودي' على السطح الفاصل، فإن زاوية الانكسار تساوي:", a: "صفر", options: ["90 درجة", "45 درجة", "صفر", "180 درجة"] },
+    { q: "معامل الانكسار المطلق لأي مادة شفافية دائماً يكون:", a: "أكبر من الواحد", options: ["أقل من الواحد", "يساوي الواحد", "أكبر من الواحد", "يساوي صفر"] },
+
+    // السرعة والطول الموجي في الانكسار
+    { q: "عندما ينكسر الضوء، الخاصية التي 'لا تتغير' هي:", a: "التردد", options: ["السرعة", "الطول الموجي", "الاتجاه", "التردد"] },
+    { q: "العلاقة بين معامل الانكسار وسرعة الضوء في الوسط هي علاقة:", a: "عكسية", options: ["طردية", "عكسية", "ثابتة", "لا توجد علاقة"] },
+    { q: "إذا انتقل الضوء من الهواء إلى الماء، فإن طوله الموجي:", a: "يقل", options: ["يزداد", "يقل", "يبقى ثابتاً", "يتضاعف"] },
+
+    // الزاوية الحرجة والانعكاس الكلي
+    { q: "زاوية السقوط التي تقابلها زاوية انكسار قدرها 90 درجة تسمى:", a: "الزاوية الحرجة", options: ["زاوية الانعكاس", "الزاوية الحرجة", "زاوية الانحراف", "الزاوية الصفرية"] },
+    { q: "يحدث الانعكاس الكلي الداخلي عندما ينتقل الضوء من وسط:", a: "أكبر كثافة إلى أقل كثافة", options: ["أقل كثافة إلى أكبر كثافة", "أكبر كثافة إلى أقل كثافة", "الهواء إلى الزجاج", "الفراغ إلى الماء"] },
+    { q: "شرط حدوث الانعكاس الكلي أن تكون زاوية السقوط ......... من الزاوية الحرجة:", a: "أكبر من", options: ["أقل من", "تساوي", "أكبر من", "نصف"] },
+
+    // تطبيقات الانكسار
+    { q: "ظاهرة 'السراب' الصحراوي تحدث نتيجة:", a: "انكسار الضوء في طبقات الهواء", options: ["انعكاس الضوء على الرمل", "انكسار الضوء في طبقات الهواء", "امتصاص الأرض للضوء", "حيود الضوء"] },
+    { q: "تبدو العصا مغمورة في الماء كأنها مكسورة بسبب:", a: "الانكسار", options: ["الانعكاس", "الانكسار", "التشتت", "الاستقطاب"] },
+    { q: "الألياف الضوئية تعتمد في عملها على ظاهرة:", a: "الانعكاس الكلي الداخلي", options: ["الانكسار البسيط", "الانعكاس الكلي الداخلي", "الحيود", "التداخل"] },
+    { q: "يستخدم المنشور الزجاجي لتحليل الضوء الأبيض إلى ألوانه بسبب اختلاف ......... لكل لون:", a: "معامل الانكسار", options: ["السرعة فقط", "معامل الانكسار", "الشدة", "درجة الحرارة"] },
+    { q: "رؤية حمام السباحة كأنه أقل عمقاً مما هو عليه في الحقيقة سببه:", a: "انكسار الضوء", options: ["انعكاس الضوء", "انكسار الضوء", "شفافية الماء", "تشتت الضوء"] },
+
+    // العدسات (تطبيق على الانكسار)
+    { q: "العدسة التي تعمل على تجميع الأشعة المنكسرة تسمى:", a: "العدسة المحدبة", options: ["العدسة المقعرة", "العدسة المحدبة", "العدسة المستوية", "العدسة الأسطوانية"] },
+    { q: "تعمل العدسة المقعرة على ......... الأشعة الضوئية:", a: "تفريق", options: ["تجميع", "توصيل", "تفريق", "عكس"] },
+    { q: "نقطة تجمع الأشعة المنكسرة في العدسة المحدبة تسمى:", a: "البؤرة", options: ["المركز البصري", "البؤرة", "نصف القطر", "المحور"] },
+
+    // مسائل ومفاهيم متقدمة
+    { q: "إذا كان معامل انكسار الماء 1.33 ومعامل انكسار الزجاج 1.5، فإن الضوء يكون أسرع في:", a: "الماء", options: ["الماء", "الزجاج", "السرعة متساوية", "لا يمكن التحديد"] },
+    { q: "عند انتقال الضوء من الماء إلى الهواء، فإنه ينكسر:", a: "مبتعداً عن العمود المقام", options: ["مبتعداً عن العمود المقام", "مقترباً من العمود المقام", "بزاوية سقوط تساوي الانكسار", "عمودياً على السطح"] },
+    { q: "قانون الانكسار الأول ينص على أن الشعاع الساقط والمنكسر والعمود المقام تقع جميعها في:", a: "مستوى واحد", options: ["مستويين مختلفين", "مستوى واحد", "خط مستقيم واحد", "الفراغ فقط"] },
+    { q: "كلما زاد معامل انكسار الوسط، فإن الزاوية الحرجة له:", a: "تقل", options: ["تزداد", "تقل", "تبقى ثابتة", "تصل إلى 90"] },
+    { q: "وحدة قياس معامل الانكسار المطلق هي:", a: "ليس له وحدة قياس", options: ["متر/ثانية", "هيرتز", "ليس له وحدة قياس", "جول"] },
+    { q: "ظاهرة 'قوس المطر' تعتمد على انكسار وتحلل الضوء داخل:", a: "قطرات المطر", options: ["السحب الكثيفة", "قطرات المطر", "الهواء الجاف", "سطح البحر"] },
+    { q: "العدسة التي تستخدم لعلاج طول النظر هي العدسة:", a: "المحدبة", options: ["المقعرة", "المحدبة", "المستوية", "الأسطوانية"] }
+];
+
+// دالة الخلط العشوائي
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function showContent(id, btn) {
+            document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active-card');
+            btn.classList.add('active');
+            if(id === 'quiz-div' && !quizLoaded) { prepareAndLoadQuiz(); startTimer(); quizLoaded = true; }
+        }
+
+        function prepareAndLoadQuiz() {
+            // خلط الأسئلة أولاً
+            shuffledQuizData = shuffle([...originalQuizData]);
+            
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = shuffledQuizData.map((item, i) => {
+                // خلط الخيارات لكل سؤال بشكل مستقل
+                const shuffledOptions = shuffle([...item.options]);
+                return `
+                    <div class="question-item" id="q-item-${i}">
+                        <p><b>${i+1}. ${item.q}</b></p>
+                        ${shuffledOptions.map((opt, oi) => `
+                            <label style="display:block; margin:5px 0; cursor:pointer;">
+                                <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                            </label>`).join('')}
+                        <div id="feedback-${i}" class="feedback-text"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startTimer() {
+            timerInstance = setInterval(() => {
+                let min = Math.floor(timeLeft / 60);
+                let sec = timeLeft % 60;
+                document.getElementById('timer-display').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
+                if (timeLeft <= 0) { clearInterval(timerInstance); calculateScore(false); }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function calculateScore(manual) {
+            if(manual) clearInterval(timerInstance);
+            let score = 0;
+
+            shuffledQuizData.forEach((item, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const questionDiv = document.getElementById(`q-item-${i}`);
+                const feedbackDiv = document.getElementById(`feedback-${i}`);
+                
+                let isCorrect = selected && selected.value === item.a;
+                
+                if (isCorrect) {
+                    score++;
+                    questionDiv.classList.add('correct-answer');
+                } else {
+                    questionDiv.classList.add('wrong-answer');
+                    feedbackDiv.style.display = "block";
+                    feedbackDiv.style.color = "#c0392b";
+                    feedbackDiv.innerHTML = `❌ الإجابة الصحيحة هي: ${item.a}`;
+                }
+            });
+
+            const res = document.getElementById('result-box');
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} 30 <br> <small>استعن بالله وبالتوفيق دائما</small>`;
+            res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
+            res.style.color = score >= 10 ? "#155724" : "#721c24";
+            
+            document.getElementById('submit-quiz-btn').disabled = true;
+            document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
+            document.querySelectorAll('input').forEach(i => i.disabled = true);
+        }
+    </script>
+		<div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999; direction: rtl;">
+ by:   <b>Ammar Barakat </b>
+    </div>
+</body>
+</html>
