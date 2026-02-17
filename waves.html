@@ -83,6 +83,7 @@
         .feedback-text { font-weight: bold; margin-top: 10px; display: none; color: #c0392b; }
 
         @media (max-width: 768px) {
+            body { height: auto; overflow-y: auto; }
             .sidebar { position: fixed; right: -310px; top: 0; height: 100vh; width: 280px; }
             .sidebar.open { right: 0; }
             .mobile-header { display: flex; }
@@ -93,17 +94,16 @@
     </style>
 </head>
 <body>
-
     <div class="mobile-header">space4learn</div>
     <button class="mobile-nav-toggle" onclick="toggleSidebar()">☰</button>
     <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
     <div class="sidebar" id="sidebar">
-        <h2>🌊 الحركة الموجية</h2>
+        <h2>💡 الحركة الموجية</h2>
         <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
         <button class="menu-btn" onclick="showContent('video-div', this)">🎬 تجربة اليوتيوب</button>
         <button class="menu-btn" onclick="showContent('lab-div', this)">🧪 المختبر الافتراضي</button>
-        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 اختبار الـ 20 سؤال</button>
+        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 الاختبار الذكي</button>
         <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
     </div>
 
@@ -114,102 +114,93 @@
         </div>
 
         <div id="video-div" class="display-card">
-            <iframe id="yt-player" src="https://www.youtube.com/embed/mggRRNm-aH8?rel=0&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+           <iframe id="yt-player" src="https://www.youtube.com/embed/mggRRNm-aH8?rel=0&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
 
         <div id="lab-div" class="display-card">
-            <iframe src="https://phet.colorado.edu/sims/html/waves-intro/latest/waves-intro_ar.html"></iframe>
+           <iframe src="https://phet.colorado.edu/sims/html/waves-intro/latest/waves-intro_ar.html"></iframe>
         </div>
 
         <div id="quiz-div" class="display-card">
             <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
-            <h3>📝 اختبار موجات</h3>
-            <div id="quiz-container">جارٍ تحميل الأسئلة...</div>
-            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:20px;">إرسال ومعرفة الأخطاء</button>
-            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 20px; display: none;"></div>
+            <h3>📝 اختبار الموجات (سحب آلي للأسئلة)</h3>
+            <div id="quiz-container">جاري تحميل الأسئلة...</div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 20px;">إرسال ومعرفة الأخطاء</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px; display: none;"></div>
         </div>
     </div>
 
     <script>
-        let timeLeft = 600;
         let timerInstance;
+        let timeLeft = 600; 
         let quizLoaded = false;
         let shuffledQuizData = [];
 
+        // دالة خلط المصفوفات
         function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
+        // دالة التبديل بين الأقسام
         function showContent(id, btn) {
             document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
             
-            const ytIframe = document.getElementById('yt-player');
-            if (ytIframe && ytIframe.contentWindow) {
-                const cmd = id === 'video-div' ? 'playVideo' : 'pauseVideo';
-                ytIframe.contentWindow.postMessage(`{"event":"command","func":"${cmd}","args":""}`, '*');
-            }
-
             document.getElementById(id).classList.add('active-card');
             btn.classList.add('active');
-            
-            if (window.innerWidth <= 768) {
-                const sb = document.getElementById('sidebar');
-                if(sb.classList.contains('open')) toggleSidebar();
-            }
 
             if (id === 'quiz-div' && !quizLoaded) { 
                 fetchAndLoadQuiz(); 
                 quizLoaded = true; 
             }
+
+            if (window.innerWidth <= 768) toggleSidebar();
         }
 
-        async function fetchAndLoadQuiz() {
-            try {
-                const response = await fetch('questions.json');
-                if (!response.ok) throw new Error("فشل التحميل");
-                const allData = await response.json();
+// دالة جلب الأسئلة المخصصة لـ "الموجات" فقط
+async function fetchAndLoadQuiz() {
+    try {
+        const response = await fetch('questions.json');
+        if (!response.ok) throw new Error("لم يتم العثور على ملف الأسئلة");
+        
+        const allData = await response.json();
 
-                // فلترة الأسئلة التي تتبع موضوع "الموجات" فقط
-                const waveQuestions = allData.filter(item => item.topic === "الموجات");
+        //  فلترة الأسئلة لجلب تخصص 
+        const lightQuestions = allData.filter(item => item.topic === "الموجات");
 
-                if (waveQuestions.length === 0) {
-                    document.getElementById('quiz-container').innerHTML = "لا توجد أسئلة موجات حالياً.";
-                    return;
-                }
-
-                shuffledQuizData = shuffle(waveQuestions.map(item => ({
-                    q: item.question,
-                    options: shuffle([item.option1, item.option2, item.option3, item.option4]),
-                    correct: item.answer
-                }))).slice(0, 20); // نأخذ 20 سؤالاً فقط
-
-                renderQuiz();
-                startTimer();
-            } catch (error) {
-                document.getElementById('quiz-container').innerHTML = "حدث خطأ أثناء جلب الأسئلة.";
-            }
+        if (lightQuestions.length === 0) {
+            document.getElementById('quiz-container').innerHTML = "<p>لا توجد أسئلة متوفرة لقسم الضوء حالياً.</p>";
+            return;
         }
 
-        function renderQuiz() {
-            const container = document.getElementById('quiz-container');
-            container.innerHTML = shuffledQuizData.map((item, i) => `
-                <div class="question-item" id="q-item-${i}">
-                    <p><b>${i+1}. ${item.q}</b></p>
-                    ${item.options.map(opt => `
-                        <label style="display:block; margin:8px 0; cursor:pointer;">
-                            <input type="radio" name="q${i}" value="${opt}"> ${opt}
-                        </label>
-                    `).join('')}
-                    <div id="feedback-${i}" class="feedback-text"></div>
-                </div>
-            `).join('');
-        }
+        shuffledQuizData = shuffle(lightQuestions.map(item => ({
+            q: item.question,
+            options: shuffle([item.option1, item.option2, item.option3, item.option4]),
+            correct: item.answer
+        })));
 
-        function startTimer() {
+        renderQuiz(); // استدعاء دالة العرض
+        startTimer(); // بدء المؤقت
+        
+    } catch (error) {
+        console.error("خطأ:", error);
+        document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، فشل تحميل أسئلة الموجات من قاعدة البيانات.</p>";
+    }
+}
+
+// دالة عرض الأسئلة في الصفحة
+function renderQuiz() {
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = shuffledQuizData.map((item, i) => `
+        <div class="question-item" id="q-item-${i}">
+            <p><b>${i+1}. ${item.q}</b></p>
+            ${item.options.map(opt => `
+                <label style="display:block; margin:8px 0; cursor:pointer;">
+                    <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                </label>
+            `).join('')}
+            <div id="feedback-${i}" class="feedback-text"></div>
+        </div>
+    `).join('');
+}        function startTimer() {
             timerInstance = setInterval(() => {
                 let min = Math.floor(timeLeft / 60);
                 let sec = timeLeft % 60;
@@ -225,53 +216,34 @@
                 const sel = document.querySelector(`input[name="q${i}"]:checked`);
                 const qDiv = document.getElementById(`q-item-${i}`);
                 const fDiv = document.getElementById(`feedback-${i}`);
+                
                 if (sel && sel.value === item.correct) { 
-                    score++; qDiv.classList.add('correct-answer'); 
+                    score++; 
+                    qDiv.classList.add('correct-answer'); 
                 } else { 
                     qDiv.classList.add('wrong-answer'); 
                     fDiv.style.display = "block"; 
                     fDiv.innerHTML = `❌ الإجابة الصحيحة: ${item.correct}`; 
                 }
             });
+
             const res = document.getElementById('result-box');
             res.style.display = "block";
             res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من ${shuffledQuizData.length}`;
-            res.style.background = score >= (shuffledQuizData.length/2) ? "#d4edda" : "#f8d7da";
+            res.style.background = score >= (shuffledQuizData.length / 2) ? "#d4edda" : "#f8d7da";
             document.getElementById('submit-quiz-btn').disabled = true;
             document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
-            setTimeout(() => res.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+            res.scrollIntoView({ behavior: 'smooth' });
         }
-        function calculateScore(manual) {
-            if(manual) clearInterval(timerInstance);
-            let score = 0;
-            shuffledQuizData.forEach((item, i) => {
-                const sel = document.querySelector(`input[name="q${i}"]:checked`);
-                const qDiv = document.getElementById(`q-item-${i}`);
-                const fDiv = document.getElementById(`feedback-${i}`);
-                if (sel && sel.value === item.correct) { 
-                    score++; qDiv.classList.add('correct-answer'); 
-                } else { 
-                    qDiv.classList.add('wrong-answer'); 
-                    fDiv.style.display = "block"; 
-                    fDiv.innerHTML = `❌ الإجابة الصحيحة: ${item.correct}`; 
-                }
-            });
 
-            const res = document.getElementById('result-box');
-            res.style.display = "block";
-            const resultText = `انتهى الاختبار! نتيجتك هي: ${score} من ${shuffledQuizData.length}`;
-            res.innerHTML = resultText;
-            
-            res.style.background = score >= (shuffledQuizData.length/2) ? "#d4edda" : "#f8d7da";
-            res.style.color = score >= (shuffledQuizData.length/2) ? "#155724" : "#721c24";
-
-            alert(resultText);
-
-            document.getElementById('submit-quiz-btn').disabled = true;
-            document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
-
-            res.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
         }
     </script>
+
+    <div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999;">
+        by: <b>Ammar Barakat</b>
+    </div>
 </body>
 </html>
