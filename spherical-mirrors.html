@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الفيزياء - اختبار عشوائي</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; display: flex; height: 100vh; 
+            background-color: #f0f4f8; overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px; background-color: #1e3a5f; color: white;
+            display: flex; flex-direction: column; padding: 20px;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+        }
+
+        .sidebar h2 { 
+            text-align: center; font-size: 1.3em; color: #90cdf4; 
+            border-bottom: 1px solid #2c5282; padding-bottom: 15px;
+        }
+
+        .menu-btn {
+            background: #2a4365; color: #ebf8ff; border: none;
+            padding: 14px; margin-bottom: 10px; border-radius: 10px;
+            cursor: pointer; text-align: right; font-size: 1em;
+            transition: 0.3s; display: flex; align-items: center; gap: 10px;
+        }
+
+        .menu-btn:hover { background: #3182ce; }
+        .menu-btn.active { background: #4299e1; font-weight: bold; }
+
+        .home-btn { 
+            margin-top: auto; padding: 12px; 
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white; text-decoration: none; border-radius: 10px; text-align: center;
+        }
+
+        .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
+        .display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .active-card { display: block; }
+
+        #quiz-timer {
+            background: #e74c3c; color: white; padding: 10px 20px;
+            border-radius: 8px; font-weight: bold; position: sticky; top: 0; z-index: 10;
+            display: inline-block; margin-bottom: 20px;
+        }
+
+        .question-item { background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #4299e1; transition: 0.3s; }
+        .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
+        .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
+        .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
+        
+        iframe, object { width: 100%; height: 100%; border: none; border-radius: 10px; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; position: sticky; top: 0; z-index: 100; }
+            .main-content { padding: 10px; height: 85vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>🪞المرايا الكرية</h2>
+        <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
+        <button class="menu-btn" onclick="showContent('video-div', this)">🎬 تجربة اليوتيوب</button>
+        <button class="menu-btn" onclick="showContent('lab-div', this)">🧪 المختبر الافتراضي</button>
+        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 اختبار ال30 سؤال</button>
+        <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
+    </div>
+
+    <div class="main-content">
+        <div id="pdf-div" class="display-card active-card">
+<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https://www.canva.com/design/DAG_9VroQgs/eHtqPjsqSXNj7ju5DmibXQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+</div>
+<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAG_9VroQgs&#x2F;eHtqPjsqSXNj7ju5DmibXQ&#x2F;view?utm_content=DAG_9VroQgs&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">Spherical Mirrors</a> by Ammar Barakat
+        </div>
+
+        <div id="video-div" class="display-card">
+            <iframe src="https://www.youtube.com/embed/w2s2fZr8sqQ" allowfullscreen></iframe>
+        </div>
+
+        <div id="lab-div" class="display-card">
+            <iframe src="https://phet.colorado.edu/sims/html/geometric-optics/latest/geometric-optics_ar.html"></iframe>
+        </div>
+
+        <div id="quiz-div" class="display-card">
+            <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
+            <h3>📝اختبار المرايا الكرية - المدة 10 دقائق</h3>
+            <div id="quiz-container"></div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let timerInstance;
+        let timeLeft = 600; 
+        let quizLoaded = false;
+        let shuffledQuizData = [];
+
+        const originalQuizData = [
+ 
+  {
+    "q": "المرآة التي يكون سطحها العاكس هو السطح الداخلي لكرة زجاجية مجوفة هي:",
+    "options": ["المرآة المحدبة", "المرآة المقعرة", "المرآة المستوية", "المرآة الكروية"],
+    "a": "المرآة المقعرة"
+  },
+  {
+    "q": "تُستخدم المرآة المحدبة في السيارات لأنها:",
+    "options": ["تكون صورة حقيقية", "تغطي مساحة واسعة خلف السيارة", "تكبر صورة الأجسام", "تجمع الأشعة في بؤرة"],
+    "a": "تغطي مساحة واسعة خلف السيارة"
+  },
+  {
+    "q": "النقطة التي تقع في منتصف سطح المرآة تماماً تسمى:",
+    "options": ["مركز التكور", "البؤرة", "قطب المرآة (ق)", "المحور الأصلي"],
+    "a": "قطب المرآة (ق)"
+  },
+  {
+    "q": "المسافة بين قطب المرآة والبؤرة تسمى:",
+    "options": ["البعد البؤري (ع)", "نصف قطر التكور", "المحور الثانوي", "التكبير"],
+    "a": "البعد البؤري (ع)"
+  },
+  {
+    "q": "تعتبر بؤرة المرآة المقعرة بؤرة:",
+    "options": ["خيالية", "حقيقية", "مشتتة", "خلف المرآة"],
+    "a": "حقيقية"
+  },
+  {
+    "q": "إذا سقط شعاع موازياً للمحور الأصلي لمرآة مقعرة فإنه ينعكس ماراً بـ:",
+    "options": ["القطب", "مركز التكور", "البؤرة", "نفس المسار"],
+    "a": "البؤرة"
+  },
+  {
+    "q": "العلاقة الرياضية الصحيحة للمرايا هي:",
+    "options": ["1/ع = 1/س + 1/ص", "ع = س + ص", "ت = س/ص", "نق = ع/2"],
+    "a": "1/ع = 1/س + 1/ص"
+  },
+  {
+    "q": "في قانون المرايا، يرمز الرمز (ص) إلى:",
+    "options": ["بعد الجسم", "بعد الصورة", "البعد البؤري", "طول الجسم"],
+    "a": "بعد الصورة"
+  },
+  {
+    "q": "الصورة المتكونة في المرآة المحدبة تكون دائماً:",
+    "options": ["مقلوبة", "مكبرة", "مصغرة وتقديرية", "حقيقية"],
+    "a": "مصغرة وتقديرية"
+  },
+  {
+    "q": "عندما يوضع جسم في مركز التكور (م) لمرآة مقعرة، تكون الصورة:",
+    "options": ["مصغرة", "مكبرة", "مساوية للجسم", "خيالية"],
+    "a": "مساوية للجسم"
+  },
+  {
+    "q": "الشعاع الساقط ماراً بمركز التكور ينعكس:",
+    "options": ["على نفسه", "ماراً بالبؤرة", "موازياً للمحور", "ماراً بالقطب"],
+    "a": "على نفسه"
+  },
+  {
+    "q": "يكون البعد البؤري (ع) للمرآة المحدبة دائماً:",
+    "options": ["موجب", "سالب", "صفر", "مالانهاية"],
+    "a": "سالب"
+  },
+  {
+    "q": "إذا كانت قيمة التكبير (ت) أكبر من الواحد الصحيح، فالصورة تكون:",
+    "options": ["مصغرة", "مساوية للجسم", "مكبرة", "خيالية دائماً"],
+    "a": "مكبرة"
+  },
+  {
+    "q": "تسمى المرآة المقعرة بالمرآة:",
+    "options": ["المفرقة", "اللامة (المجمعة)", "المستوية", "التقديرية"],
+    "a": "اللامة (المجمعة)"
+  },
+  {
+    "q": "نصف قطر تكور المرآة (نق) يساوي:",
+    "options": ["ع", "2ع", "ع/2", "3ع"],
+    "a": "2ع"
+  },
+  {
+    "q": "تستخدم المرآة المقعرة في الحلاقة لأنها تعطي صورة خيالية مكبرة عندما يوضع الجسم:",
+    "options": ["بعيداً جداً", "عند مركز التكور", "داخل البعد البؤري", "عند البؤرة"],
+    "a": "داخل البعد البؤري"
+  },
+  {
+    "q": "المستقيم المار بقطب المرآة ومركز التكور هو:",
+    "options": ["المحور الأصلي", "المحور الثانوي", "نصف القطر", "البعد البؤري"],
+    "a": "المحور الأصلي"
+  },
+  {
+    "q": "الصورة التي لا يمكن استقبالها على حائل (حاجز) تسمى صورة:",
+    "options": ["حقيقية", "مقلوبة", "خيالية (تقديرية)", "مصغرة"],
+    "a": "خيالية (تقديرية)"
+  },
+  {
+    "q": "عند سقوط شعاع ماراً بالبؤرة لمرآة مقعرة، فإنه ينعكس:",
+    "options": ["على نفسه", "موازياً للمحور الأصلي", "ماراً بمركز التكور", "بزاوية صفر"],
+    "a": "موازياً للمحور الأصلي"
+  },
+  {
+    "q": "في المرآة المحدبة، يقع مركز التكور والبؤرة:",
+    "options": ["أمام السطح العاكس", "خلف السطح العاكس", "على السطح العاكس", "في القطب"],
+    "a": "خلف السطح العاكس"
+  },
+  {
+    "q": "إذا كان بعد الجسم (س) يساوي البعد البؤري (ع)، فإن الصورة تتكون في:",
+    "options": ["البؤرة", "مركز التكور", "اللانهاية", "خلف المرآة"],
+    "a": "اللانهاية"
+  },
+  {
+    "q": "قانون التكبير (ت) يحسب من العلاقة:",
+    "options": ["ت = ص/س", "ت = س/ص", "ت = ع/نق", "ت = س+ص"],
+    "a": "ت = ص/س"
+  },
+  {
+    "q": "مرآة كروية نصف قطرها 30 سم، يكون بعدها البؤري:",
+    "options": ["30 سم", "60 سم", "15 سم", "10 سم"],
+    "a": "15 سم"
+  },
+  {
+    "q": "الصورة الحقيقية تكون دائماً:",
+    "options": ["معتدلة", "مقلوبة", "خلف المرآة", "مصغرة دائماً"],
+    "a": "مقلوبة"
+  },
+  {
+    "q": "أي المرايا التالية تعطي صورة معتدلة ومصغرة دوماً؟",
+    "options": ["المقعرة", "المحدبة", "المستوية", "كل ما سبق"],
+    "a": "المحدبة"
+  },
+  {
+    "q": "إذا كانت قيمة (ص) سالبة، فهذا يعني أن الصورة:",
+    "options": ["حقيقية", "خيالية", "أمام المرآة", "مقلوبة"],
+    "a": "خيالية"
+  },
+  {
+    "q": "المرآة التي سطحها العاكس هو السطح الخارجي للكرة هي المرآة:",
+    "options": ["المقعرة", "المحدبة", "اللامة", "الأسطوانية"],
+    "a": "المحدبة"
+  },
+  {
+    "q": "تستخدم المرايا المقعرة في كشافات السيارات لغرض:",
+    "options": ["توسيع الرؤية", "تركيز الأشعة", "تصغير الضوء", "تغيير لون الضوء"],
+    "a": "تركيز الأشعة"
+  },
+  {
+    "q": "المسافة بين مركز التكور وقطب المرآة تسمى:",
+    "options": ["البعد البؤري", "المحور الثانوي", "نصف قطر التكور", "التكبير"],
+    "a": "نصف قطر التكور"
+  },
+  {
+    "q": "عندما تكون (ت = 1)، تكون الصورة:",
+    "options": ["مكبرة", "مصغرة", "مساوية للجسم", "غير موجودة"],
+    "a": "مساوية للجسم"
+  }
+       ];
+
+        // دالة الخلط العشوائي
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function showContent(id, btn) {
+            document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active-card');
+            btn.classList.add('active');
+            if(id === 'quiz-div' && !quizLoaded) { prepareAndLoadQuiz(); startTimer(); quizLoaded = true; }
+        }
+
+        function prepareAndLoadQuiz() {
+            // خلط الأسئلة أولاً
+            shuffledQuizData = shuffle([...originalQuizData]);
+            
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = shuffledQuizData.map((item, i) => {
+                // خلط الخيارات لكل سؤال بشكل مستقل
+                const shuffledOptions = shuffle([...item.options]);
+                return `
+                    <div class="question-item" id="q-item-${i}">
+                        <p><b>${i+1}. ${item.q}</b></p>
+                        ${shuffledOptions.map((opt, oi) => `
+                            <label style="display:block; margin:5px 0; cursor:pointer;">
+                                <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                            </label>`).join('')}
+                        <div id="feedback-${i}" class="feedback-text"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startTimer() {
+            timerInstance = setInterval(() => {
+                let min = Math.floor(timeLeft / 60);
+                let sec = timeLeft % 60;
+                document.getElementById('timer-display').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
+                if (timeLeft <= 0) { clearInterval(timerInstance); calculateScore(false); }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function calculateScore(manual) {
+            if(manual) clearInterval(timerInstance);
+            let score = 0;
+
+            shuffledQuizData.forEach((item, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const questionDiv = document.getElementById(`q-item-${i}`);
+                const feedbackDiv = document.getElementById(`feedback-${i}`);
+                
+                let isCorrect = selected && selected.value === item.a;
+                
+                if (isCorrect) {
+                    score++;
+                    questionDiv.classList.add('correct-answer');
+                } else {
+                    questionDiv.classList.add('wrong-answer');
+                    feedbackDiv.style.display = "block";
+                    feedbackDiv.style.color = "#c0392b";
+                    feedbackDiv.innerHTML = `❌ الإجابة الصحيحة هي: ${item.a}`;
+                }
+            });
+
+            const res = document.getElementById('result-box');
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} 40 <br> <small>استعن بالله وبالتوفيق دائما</small>`;
+            res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
+            res.style.color = score >= 10 ? "#155724" : "#721c24";
+            
+            document.getElementById('submit-quiz-btn').disabled = true;
+            document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
+            document.querySelectorAll('input').forEach(i => i.disabled = true);
+        }
+    </script>
+		<div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999; direction: rtl;">
+ by:   <b>Ammar Barakat  </b>
+    </div>
+</body>
+</html>
