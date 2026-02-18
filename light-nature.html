@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الضوء وظواهره</title>
+    <title>الضوء وظواهره - space4learn</title>
     <style>
         /* 1. التنسيقات العامة */
         * { box-sizing: border-box; }
@@ -14,7 +14,7 @@
             direction: rtl;
         }
 
-        /* 2. القائمة الجانبية (Sidebar) */
+        /* 2. القائمة الجانبية */
         .sidebar {
             width: 300px; background-color: #1e3a5f; color: white;
             display: flex; flex-direction: column; padding: 20px;
@@ -26,7 +26,7 @@
             border-bottom: 1px solid #2c5282; padding-bottom: 15px; 
         }
 
-        /* 3. شريط الموبايل العلوي */
+        /* 3. شريط الموبايل */
         .mobile-header { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
             background: #1e3a5f; color: white; align-items: center; 
@@ -58,14 +58,14 @@
             color: white; text-decoration: none; border-radius: 10px; text-align: center; 
         }
 
-        /* 5. منطقة المحتوى الرئيسي */
+        /* 5. منطقة المحتوى */
         .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
         .display-card { 
             width: 100%; height: 100%; background: white; border-radius: 15px; 
             display: none; overflow-y: auto; padding: 20px; 
             box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
         }
-        .active-card { display: block; }
+        .active-card { display: flex; flex-direction: column; }
         iframe { width: 100%; height: 100%; border: none; border-radius: 10px; }
 
         /* 6. الاختبار والمؤقت */
@@ -109,12 +109,15 @@
 
     <div class="main-content">
         <div id="pdf-div" class="display-card active-card">
-            <iframe src="https://www.canva.com/design/DAG71_ybA-8/EiE3_UzwRoCM-yqG0-J6xQ/view?embed" allowfullscreen></iframe>
+            <div style="flex: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <iframe src="https://www.canva.com/design/DAG71_ybA-8/EiE3_UzwRoCM-yqG0-J6xQ/view?embed" allowfullscreen></iframe>
+            </div>
             <p style="text-align: center; margin-top: 10px; font-weight: bold; color: #1e3a5f;">بواسطة: عمار بركات</p>
         </div>
 
         <div id="video-div" class="display-card">
-            <iframe id="yt-player" src="https://www.youtube.com/embed/w2s2fZr8sqQ?enablejsapi=1" allowfullscreen></iframe>
+            <div id="player" style="flex: 1; border-radius: 10px; overflow: hidden;"></div>
+            <h3 style="text-align: center; color: #1e3a5f; margin-top: 10px;">🎬 تجربة عملية حول خصائص الضوء</h3>
         </div>
 
         <div id="lab-div" class="display-card">
@@ -131,16 +134,40 @@
     </div>
 
     <script>
+        // 1. إعداد YouTube API للتحكم في التشغيل والتوقف
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'w2s2fZr8sqQ', 
+                playerVars: { 'rel': 0, 'showinfo': 0 }
+            });
+        }
+
         let timerInstance;
         let timeLeft = 600; 
         let quizLoaded = false;
         let shuffledQuizData = [];
 
-        // دالة خلط المصفوفات
         function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
-        // دالة التبديل بين الأقسام
+        // دالة التبديل المحسنة للتحكم في الفيديو
         function showContent(id, btn) {
+            // إيقاف واستكمال الفيديو حسب الصفحة
+            if (player && typeof player.pauseVideo === 'function') {
+                if (id === 'video-div') {
+                    player.playVideo();
+                } else {
+                    player.pauseVideo();
+                }
+            }
+
             document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
             
@@ -155,53 +182,49 @@
             if (window.innerWidth <= 768) toggleSidebar();
         }
 
-// دالة جلب الأسئلة المخصصة لـ "الضوء" فقط
-async function fetchAndLoadQuiz() {
-    try {
-        const response = await fetch('questions.json');
-        if (!response.ok) throw new Error("لم يتم العثور على ملف الأسئلة");
-        
-        const allData = await response.json();
+        async function fetchAndLoadQuiz() {
+            try {
+                const response = await fetch('questions.json');
+                if (!response.ok) throw new Error("فشل التحميل");
+                const allData = await response.json();
+                
+                // فلترة الأسئلة لتخصص "الضوء" فقط
+                const lightQuestions = allData.filter(item => item.topic === "الضوء");
 
-        // السطر السحري: فلترة الأسئلة لجلب تخصص "الضوء" فقط
-        const lightQuestions = allData.filter(item => item.topic === "الضوء");
+                if (lightQuestions.length === 0) {
+                    document.getElementById('quiz-container').innerHTML = "<p>لا توجد أسئلة متوفرة حالياً.</p>";
+                    return;
+                }
 
-        if (lightQuestions.length === 0) {
-            document.getElementById('quiz-container').innerHTML = "<p>لا توجد أسئلة متوفرة لقسم الضوء حالياً.</p>";
-            return;
+                shuffledQuizData = shuffle(lightQuestions.map(item => ({
+                    q: item.question,
+                    options: shuffle([item.option1, item.option2, item.option3, item.option4]),
+                    correct: item.answer
+                })));
+
+                renderQuiz();
+                startTimer();
+            } catch (error) {
+                document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، تعذر تحميل الأسئلة.</p>";
+            }
         }
 
-        // تحويل البيانات وخلطها
-        shuffledQuizData = shuffle(lightQuestions.map(item => ({
-            q: item.question,
-            options: shuffle([item.option1, item.option2, item.option3, item.option4]),
-            correct: item.answer
-        })));
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = shuffledQuizData.map((item, i) => `
+                <div class="question-item" id="q-item-${i}">
+                    <p><b>${i+1}. ${item.q}</b></p>
+                    ${item.options.map(opt => `
+                        <label style="display:block; margin:8px 0; cursor:pointer;">
+                            <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                    <div id="feedback-${i}" class="feedback-text"></div>
+                </div>
+            `).join('');
+        }
 
-        renderQuiz(); // استدعاء دالة العرض
-        startTimer(); // بدء المؤقت
-        
-    } catch (error) {
-        console.error("خطأ:", error);
-        document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، فشل تحميل أسئلة الضوء من قاعدة البيانات.</p>";
-    }
-}
-
-// دالة عرض الأسئلة في الصفحة
-function renderQuiz() {
-    const container = document.getElementById('quiz-container');
-    container.innerHTML = shuffledQuizData.map((item, i) => `
-        <div class="question-item" id="q-item-${i}">
-            <p><b>${i+1}. ${item.q}</b></p>
-            ${item.options.map(opt => `
-                <label style="display:block; margin:8px 0; cursor:pointer;">
-                    <input type="radio" name="q${i}" value="${opt}"> ${opt}
-                </label>
-            `).join('')}
-            <div id="feedback-${i}" class="feedback-text"></div>
-        </div>
-    `).join('');
-}        function startTimer() {
+        function startTimer() {
             timerInstance = setInterval(() => {
                 let min = Math.floor(timeLeft / 60);
                 let sec = timeLeft % 60;
@@ -248,4 +271,3 @@ function renderQuiz() {
     </div>
 </body>
 </html>
-
