@@ -114,7 +114,7 @@
         </div>
 
         <div id="video-div" class="display-card">
-           <iframe id="yt-player" src="https://www.youtube.com/embed/mggRRNm-aH8?rel=0&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            <div id="player" style="width: 100%; height: 100%;"></div>
         </div>
 
         <div id="lab-div" class="display-card">
@@ -123,7 +123,7 @@
 
         <div id="quiz-div" class="display-card">
             <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
-            <h3>📝 اختبار الموجات (سحب آلي للأسئلة)</h3>
+            <h3>📝 اختبار الموجات</h3>
             <div id="quiz-container">جاري تحميل الأسئلة...</div>
             <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 20px;">إرسال ومعرفة الأخطاء</button>
             <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px; display: none;"></div>
@@ -131,16 +131,35 @@
     </div>
 
     <script>
+        // دمج YouTube API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'mggRRNm-aH8',
+                playerVars: { 'rel': 0, 'showinfo': 0, 'enablejsapi': 1 }
+            });
+        }
+
         let timerInstance;
         let timeLeft = 600; 
         let quizLoaded = false;
         let shuffledQuizData = [];
 
-        // دالة خلط المصفوفات
         function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
-        // دالة التبديل بين الأقسام
         function showContent(id, btn) {
+            // إيقاف الفيديو عند التبديل
+            if (player && typeof player.pauseVideo === 'function') {
+                if (id !== 'video-div') player.pauseVideo();
+            }
+
             document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
             
@@ -155,52 +174,49 @@
             if (window.innerWidth <= 768) toggleSidebar();
         }
 
-// دالة جلب الأسئلة المخصصة لـ "الموجات" فقط
-async function fetchAndLoadQuiz() {
-    try {
-        const response = await fetch('questions.json');
-        if (!response.ok) throw new Error("لم يتم العثور على ملف الأسئلة");
-        
-        const allData = await response.json();
+        async function fetchAndLoadQuiz() {
+            try {
+                const response = await fetch('questions.json');
+                if (!response.ok) throw new Error("فشل التحميل");
+                const allData = await response.json();
+                
+                // فلترة الأسئلة للموجات
+                const lightQuestions = allData.filter(item => item.topic === "الموجات");
 
-        //  فلترة الأسئلة لجلب تخصص 
-        const lightQuestions = allData.filter(item => item.topic === "الموجات");
+                if (lightQuestions.length === 0) {
+                    document.getElementById('quiz-container').innerHTML = "<p>لا توجد أسئلة متوفرة حالياً.</p>";
+                    return;
+                }
 
-        if (lightQuestions.length === 0) {
-            document.getElementById('quiz-container').innerHTML = "<p>لا توجد أسئلة متوفرة لقسم الضوء حالياً.</p>";
-            return;
+                shuffledQuizData = shuffle(lightQuestions.map(item => ({
+                    q: item.question,
+                    options: shuffle([item.option1, item.option2, item.option3, item.option4]),
+                    correct: item.answer
+                })));
+
+                renderQuiz();
+                startTimer();
+            } catch (error) {
+                document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، فشل تحميل الأسئلة.</p>";
+            }
         }
 
-        shuffledQuizData = shuffle(lightQuestions.map(item => ({
-            q: item.question,
-            options: shuffle([item.option1, item.option2, item.option3, item.option4]),
-            correct: item.answer
-        })));
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = shuffledQuizData.map((item, i) => `
+                <div class="question-item" id="q-item-${i}">
+                    <p><b>${i+1}. ${item.q}</b></p>
+                    ${item.options.map(opt => `
+                        <label style="display:block; margin:8px 0; cursor:pointer;">
+                            <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                    <div id="feedback-${i}" class="feedback-text"></div>
+                </div>
+            `).join('');
+        }
 
-        renderQuiz(); // استدعاء دالة العرض
-        startTimer(); // بدء المؤقت
-        
-    } catch (error) {
-        console.error("خطأ:", error);
-        document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، فشل تحميل أسئلة الموجات من قاعدة البيانات.</p>";
-    }
-}
-
-// دالة عرض الأسئلة في الصفحة
-function renderQuiz() {
-    const container = document.getElementById('quiz-container');
-    container.innerHTML = shuffledQuizData.map((item, i) => `
-        <div class="question-item" id="q-item-${i}">
-            <p><b>${i+1}. ${item.q}</b></p>
-            ${item.options.map(opt => `
-                <label style="display:block; margin:8px 0; cursor:pointer;">
-                    <input type="radio" name="q${i}" value="${opt}"> ${opt}
-                </label>
-            `).join('')}
-            <div id="feedback-${i}" class="feedback-text"></div>
-        </div>
-    `).join('');
-}        function startTimer() {
+        function startTimer() {
             timerInstance = setInterval(() => {
                 let min = Math.floor(timeLeft / 60);
                 let sec = timeLeft % 60;
@@ -247,4 +263,3 @@ function renderQuiz() {
     </div>
 </body>
 </html>
-
