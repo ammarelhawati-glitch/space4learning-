@@ -3,185 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الفيزياء - اختبار عشوائي</title>
+    <title>التيارية</title>
     <style>
+     
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
             margin: 0; display: flex; height: 100vh; 
             background-color: #f0f4f8; overflow: hidden;
+            direction: rtl;
         }
 
+       
         .sidebar {
             width: 300px; background-color: #1e3a5f; color: white;
             display: flex; flex-direction: column; padding: 20px;
             box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+            transition: 0.4s ease; z-index: 2000; 
         }
-
         .sidebar h2 { 
             text-align: center; font-size: 1.3em; color: #90cdf4; 
-            border-bottom: 1px solid #2c5282; padding-bottom: 15px;
+            border-bottom: 1px solid #2c5282; padding-bottom: 15px; 
         }
 
-        .menu-btn {
-            background: #2a4365; color: #ebf8ff; border: none;
-            padding: 14px; margin-bottom: 10px; border-radius: 10px;
-            cursor: pointer; text-align: right; font-size: 1em;
-            transition: 0.3s; display: flex; align-items: center; gap: 10px;
+        /* 3. شريط الموبايل */
+        .mobile-header { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
+            background: #1e3a5f; color: white; align-items: center; 
+            justify-content: center; z-index: 1000; 
+            font-weight: 900; font-size: 1.4em;
+        }
+        .mobile-nav-toggle { 
+            display: none; position: fixed; top: 15px; right: 15px; 
+            z-index: 1100; cursor: pointer; background: transparent; 
+            color: white; border: none; font-size: 26px; 
+        }
+        .overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; 
+            height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; 
         }
 
+        /* 4. أزرار القائمة */
+        .menu-btn { 
+            background: #2a4365; color: #ebf8ff; border: none; 
+            padding: 14px; margin-bottom: 10px; border-radius: 10px; 
+            cursor: pointer; text-align: right; font-size: 1em; 
+            transition: 0.3s; width: 100%;
+        }
         .menu-btn:hover { background: #3182ce; }
         .menu-btn.active { background: #4299e1; font-weight: bold; }
-
         .home-btn { 
             margin-top: auto; padding: 12px; 
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            color: white; text-decoration: none; border-radius: 10px; text-align: center;
+            background: linear-gradient(135deg, #48bb78, #38a169); 
+            color: white; text-decoration: none; border-radius: 10px; text-align: center; 
         }
 
+        /* 5. منطقة المحتوى */
         .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
-        .display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .active-card { display: block; }
-
-        #quiz-timer {
-            background: #e74c3c; color: white; padding: 10px 20px;
-            border-radius: 8px; font-weight: bold; position: sticky; top: 0; z-index: 10;
-            display: inline-block; margin-bottom: 20px;
+        .display-card { 
+            width: 100%; height: 100%; background: white; border-radius: 15px; 
+            display: none; overflow-y: auto; padding: 20px; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
         }
+        .active-card { display: flex; flex-direction: column; }
+        iframe { width: 100%; height: 100%; border: none; border-radius: 10px; }
 
-        .question-item { background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #4299e1; transition: 0.3s; }
+        /* 6. الاختبار والمؤقت */
+        #quiz-timer { 
+            background: #e74c3c; color: white; padding: 10px 20px; 
+            border-radius: 8px; font-weight: bold; position: sticky; 
+            top: 0; z-index: 10; display: inline-block; margin-bottom: 20px; 
+        }
+        .question-item { 
+            background: #f7fafc; padding: 15px; border-radius: 10px; 
+            margin-bottom: 15px; border-right: 5px solid #4299e1; 
+        }
         .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
         .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
-        .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
-        
-        iframe, object { width: 100%; height: 100%; border: none; border-radius: 10px; }
+        .feedback-text { font-weight: bold; margin-top: 10px; display: none; color: #c0392b; }
 
         @media (max-width: 768px) {
-            body { flex-direction: column; overflow-y: auto; height: auto; }
-            .sidebar { width: 100%; height: auto; position: sticky; top: 0; z-index: 100; }
-            .main-content { padding: 10px; height: 85vh; }
+            body { height: auto; overflow-y: auto; }
+            .sidebar { position: fixed; right: -310px; top: 0; height: 100vh; width: 280px; }
+            .sidebar.open { right: 0; }
+            .mobile-header { display: flex; }
+            .mobile-nav-toggle { display: block; }
+            .overlay.active { display: block; }
+            .main-content { padding: 75px 8px 10px 8px; height: calc(100vh - 10px); }
         }
     </style>
 </head>
 <body>
+    <div class="mobile-header">space4learn</div>
+    <button class="mobile-nav-toggle" onclick="toggleSidebar()">☰</button>
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
-    <div class="sidebar">
-        <h2>🔋الكهرباء التيارية </h2>
+    <div class="sidebar" id="sidebar">
+        <h2>🔋 الكهربية التيارية</h2>
         <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
         <button class="menu-btn" onclick="showContent('video-div', this)">🎬 تجربة اليوتيوب</button>
-        <button class="menu-btn" onclick="showContent('lab-div', this)">🧪  (1)تجربة المقاومة في سلك</button>
-        <button class="menu-btn" onclick="showContent('lab1-div', this)">🧪 (2)  تجربة قانون اوم</button>
-		<button class="menu-btn" onclick="showContent('quiz-div', this)">📝 اختبار ال30سؤال</button>
+         <button class="menu-btn" onclick="showContent('lab-div', this)">🧪  (1)تجربة المقاومة في سلك</button>
+		 <button class="menu-btn" onclick="showContent('lab1-div', this)">🧪 (2)  تجربة قانون اوم</button>
+        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 الاختبار الذكي</button>
         <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
     </div>
 
     <div class="main-content">
         <div id="pdf-div" class="display-card active-card">
-            <div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%;
- padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
- border-radius: 8px; will-change: transform;">
-  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-    src="https://www.canva.com/design/DAG9nuk6YwA/85g8vZ23025TW9rUXpdEBg/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-  </iframe>
-</div>
-<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAG9nuk6YwA&#x2F;85g8vZ23025TW9rUXpdEBg&#x2F;view?utm_content=DAG9nuk6YwA&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">Current Electricity</a> by Ammar Barakat
+            <div style="flex: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <iframe src="https://www.canva.com/design/DAG9nuk6YwA/85g8vZ23025TW9rUXpdEBg/view?embed" allowfullscreen></iframe>
+            </div>
+            <p style="text-align: center; margin-top: 10px; font-weight: bold; color: #1e3a5f;">بواسطة: عمار بركات</p>
         </div>
 
         <div id="video-div" class="display-card">
-            <iframe src="https://www.youtube.com/embed/w2s2fZr8sqQ" allowfullscreen></iframe>
+            <div id="player" style="flex: 1; border-radius: 10px; overflow: hidden;"></div>
+            <h3 style="text-align: center; color: #1e3a5f; margin-top: 10px;">🎬 تجربة لقانون اوم</h3>
         </div>
 
         <div id="lab-div" class="display-card">
-            <iframe src="https://phet.colorado.edu/sims/html/resistance-in-a-wire/latest/resistance-in-a-wire_ar.html"></iframe>
-        </div>
-		 <div id="lab1-div" class="display-card">
-            <iframe src="https://phet.colorado.edu/sims/html/ohms-law/latest/ohms-law_all.html?locale=ar"></iframe>
+            <iframe src="https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_ar.html"></iframe>
         </div>
 
         <div id="quiz-div" class="display-card">
             <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
-            <h3>📝اختبار الكهرباء التيارية- المدة :10 دقائق</h3>
-            <div id="quiz-container"></div>
-            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
-            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
+            <h3>📝 اختبار كهربية تيارية - الزمن 10 دقائق</h3>
+            <div id="quiz-container">جاري تحميل الأسئلة...</div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 20px;">إرسال ومعرفة الأخطاء</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px; display: none;"></div>
         </div>
     </div>
 
     <script>
+        // 1. إعداد YouTube API للتحكم في التشغيل والتوقف
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'w2s2fZr8sqQ', 
+                playerVars: { 'rel': 0, 'showinfo': 0 }
+            });
+        }
+
         let timerInstance;
         let timeLeft = 600; 
         let quizLoaded = false;
         let shuffledQuizData = [];
 
-        const originalQuizData = [
-{ "q": "المواد التي تسمح بمرور التيار الكهربائي من خلالها تسمى:", "o": ["المواد العازلة", "المواد الموصلة", "أشباه الموصلات", "المواد الخاملة"], "a": "المواد الموصلة" },
-    { "q": "التيار الكهربائي في الموصلات المعدنية هو عبارة عن سيل من:", "o": ["البروتونات", "الأيونات الموجبة", "الإلكترونات الحرة", "النيوترونات"], "a": "الإلكترونات الحرة" },
-    { "q": "كمية الشحنة الكهربائية التي تمر عبر مقطع موصل في الثانية الواحدة تسمى:", "o": ["فرق الجهد", "المقاومة", "شدة التيار", "القدرة"], "a": "شدة التيار" },
-    { "q": "يرمز لشدة التيار الكهربائي بالرمز:", "o": ["ت", "جـ", "م", "ش"], "a": "ت" },
-    { "q": "وحدة قياس شدة التيار الكهربائي في النظام الدولي هي:", "o": ["الفولت", "الأوم", "الأمبير", "الكولوم"], "a": "الأمبير" },
-    { "q": "الجهاز المستخدم لقياس شدة التيار الكهربائي هو:", "o": ["الفولتمتر", "الأميتر", "الأوم متر", "الميكرومتر"], "a": "الأميتر" },
-    { "q": "الأمبير الواحد يكافئ مرر شحنة مقدارها 1 كولوم خلال زمن:", "o": ["1 دقيقة", "1 ثانية", "1 ساعة", "10 ثواني"], "a": "1 ثانية" },
-    { "q": "يُعرف فرق الجهد الكهربائي بين نقطتين بوحدة:", "o": ["الأمبير", "الأوم", "الفولت", "الوات"], "a": "الفولت" },
-    { "q": "الجهاز المستخدم لقياس فرق الجهد الكهربائي في الدائرة هو:", "o": ["الأميتر", "الفولتمتر", "الترمومتر", "البارومتر"], "a": "الفولتمتر" },
-    { "q": "الممانعة التي يلقاها التيار الكهربائي أثناء مروره في الموصل تسمى:", "o": ["القوة الدافعة", "المقاومة الكهربائية", "الفيض الكهربائي", "السماحية"], "a": "المقاومة الكهربائية" },
-    { "q": "وحدة قياس المقاومة الكهربائية هي:", "o": ["الفولت", "الأمبير", "الأوم", "الكولوم"], "a": "الأوم" },
-    { "q": "تتناسب شدة التيار المار في موصل طردياً مع فرق الجهد عند ثبوت الحرارة، وهذا نص:", "o": ["قانون كولوم", "قانون أوم", "قانون نيوتن", "قانون فاراداي"], "a": "قانون أوم" },
-    { "q": "العلاقة الرياضية لقانون أوم هي:", "o": ["م = جـ / ت", "م = جـ × ت", "م = ت / جـ", "م = جـ + ت"], "a": "م = جـ / ت" },
-    { "q": "تزداد مقاومة الموصل المعدني بزيادة:", "o": ["مساحة مقطعه", "طوله", "برودته", "قطره"], "a": "طوله" },
-    { "q": "تتناسب مقاومة الموصل عكسياً مع:", "o": ["طوله", "مساحة مقطعه", "درجة حرارته", "فرق الجهد"], "a": "مساحة مقطعه" },
-    { "q": "المقاومة النوعية للمادة تعتمد فقط على:", "o": ["الطول والمساحة", "نوع المادة ودرجة الحرارة", "فرق الجهد", "شدة التيار"], "a": "نوع المادة ودرجة الحرارة" },
-    { "q": "يتم توصيل الأميتر في الدائرة الكهربائية على:", "o": ["التوازي", "التوالي", "شكل دائري", "التوالي والتوازي معاً"], "a": "التوالي" },
-    { "q": "يتم توصيل الفولتمتر في الدائرة الكهربائية على:", "o": ["التوالي", "التوازي", "التوالي المضاعف", "لا يهم نوع التوصيل"], "a": "التوازي" },
-    { "q": "عند توصيل المقاومات على التوالي، تكون القيمة الثابتة في كل المقاومات هي:", "o": ["فرق الجهد", "شدة التيار", "القدرة", "الطاقة"], "a": "شدة التيار" },
-    { "q": "عند توصيل المقاومات على التوازي، تكون القيمة الثابتة لجميع المقاومات هي:", "o": ["شدة التيار", "فرق الجهد", "المقاومة النوعية", "كمية الشحنة"], "a": "فرق الجهد" },
-    { "q": "المقاومة المكافئة لمجموعة مقاومات متصلة على التوالي تساوي:", "o": ["مجموعها", "مقلوب مجموعها", "حاصل ضربها", "متوسطها الحسابي"], "a": "مجموعها" },
-    { "q": "الهدف من توصيل المقاومات على التوازي هو الحصول على مقاومة:", "o": ["كبيرة جداً", "صغيرة جداً", "متغيرة", "مساوية للصفر"], "a": "صغيرة جداً" },
-    { "q": "سلك طوله (ل) ومساحته (س)، إذا زاد طوله للضعف فإن مقاومته:", "o": ["تقل للنصف", "تظل ثابتة", "تزداد للضعف", "تزداد لأربعة أمثال"], "a": "تزداد للضعف" },
-    { "q": "الجهاز الذي يمكنه تغيير قيمة المقاومة في الدائرة يسمى:", "o": ["الأميتر", "الريوستات (المقاومة المتغيرة)", "البطارية", "المفتاح"], "a": "الريوستات (المقاومة المتغيرة)" },
-    { "q": "معدل استهلاك الطاقة الكهربائية في الثانية الواحدة يسمى:", "o": ["الشغل", "القدرة الكهربائية", "الجهد", "المقاومة النوعية"], "a": "القدرة الكهربائية" },
-    { "q": "وحدة قياس القدرة الكهربائية هي:", "o": ["الجول", "الأوم", "الوات", "الفولت"], "a": "الوات" },
-    { "q": "إذا مر تيار 2 أمبير في مقاومة 5 أوم، فإن فرق الجهد يساوي:", "o": ["2.5 فولت", "7 فولت", "10 فولت", "0.4 فولت"], "a": "10 فولت" },
-    { "q": "الشغل المبذول لنقل شحنة كهربائية (ش) عبر فرق جهد (جـ) يساوي:", "o": ["ش / جـ", "جـ / ش", "جـ × ش", "جـ + ش"], "a": "جـ × ش" },
-    { "q": "يعتبر المحلول الإلكتروليتي (الملحي) موصلاً للكهرباء بسبب حركة:", "o": ["الإلكترونات فقط", "الأيونات", "الذرات المتعادلة", "البروتونات"], "a": "الأيونات" },
-    { "q": "في الدائرة المغلقة، يكون اتجاه التيار الاصطلاحي من القطب:", "o": ["السالب للموجب", "الموجب للسالب", "الأرضي للسالب", "لا يوجد اتجاه محدد"], "a": "الموجب للسالب" }
-];
+        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
-// دالة الخلط العشوائي
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
+        // دالة التبديل المحسنة للتحكم في الفيديو
         function showContent(id, btn) {
+            // إيقاف واستكمال الفيديو حسب الصفحة
+            if (player && typeof player.pauseVideo === 'function') {
+                if (id === 'video-div') {
+                    player.playVideo();
+                } else {
+                    player.pauseVideo();
+                }
+            }
+
             document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            
             document.getElementById(id).classList.add('active-card');
             btn.classList.add('active');
-            if(id === 'quiz-div' && !quizLoaded) { prepareAndLoadQuiz(); startTimer(); quizLoaded = true; }
+
+            if (id === 'quiz-div' && !quizLoaded) { 
+                fetchAndLoadQuiz(); 
+                quizLoaded = true; 
+            }
+
+            if (window.innerWidth <= 768) toggleSidebar();
         }
 
-        function prepareAndLoadQuiz() {
-            // خلط الأسئلة أولاً
-            shuffledQuizData = shuffle([...originalQuizData]);
-            
+        async function fetchAndLoadQuiz() {
+            try {
+                const response = await fetch('questions.json');
+                if (!response.ok) throw new Error("فشل التحميل");
+                const allData = await response.json();
+                
+                const lightQuestions = allData.filter(item => item.topic === "current");
+
+                if (lightQuestions.length === 0) {
+                    document.getElementById('quiz-container').innerHTML = "<p>لا توجد أسئلة متوفرة حالياً.</p>";
+                    return;
+                }
+
+                shuffledQuizData = shuffle(lightQuestions.map(item => ({
+                    q: item.question,
+                    options: shuffle([item.option1, item.option2, item.option3, item.option4]),
+                    correct: item.answer
+                })));
+
+                renderQuiz();
+                startTimer();
+            } catch (error) {
+                document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، تعذر تحميل الأسئلة.</p>";
+            }
+        }
+
+        function renderQuiz() {
             const container = document.getElementById('quiz-container');
-            container.innerHTML = shuffledQuizData.map((item, i) => {
-                // خلط الخيارات لكل سؤال بشكل مستقل
-                const shuffledOptions = shuffle([...item.o]);
-                return `
-                    <div class="question-item" id="q-item-${i}">
-                        <p><b>${i+1}. ${item.q}</b></p>
-                        ${shuffledOptions.map((opt, oi) => `
-                            <label style="display:block; margin:5px 0; cursor:pointer;">
-                                <input type="radio" name="q${i}" value="${opt}"> ${opt}
-                            </label>`).join('')}
-                        <div id="feedback-${i}" class="feedback-text"></div>
-                    </div>
-                `;
-            }).join('');
+            container.innerHTML = shuffledQuizData.map((item, i) => `
+                <div class="question-item" id="q-item-${i}">
+                    <p><b>${i+1}. ${item.q}</b></p>
+                    ${item.options.map(opt => `
+                        <label style="display:block; margin:8px 0; cursor:pointer;">
+                            <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                    <div id="feedback-${i}" class="feedback-text"></div>
+                </div>
+            `).join('');
         }
 
         function startTimer() {
@@ -189,45 +229,45 @@
                 let min = Math.floor(timeLeft / 60);
                 let sec = timeLeft % 60;
                 document.getElementById('timer-display').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
-                if (timeLeft <= 0) { clearInterval(timerInstance); calculateScore(false); }
-                timeLeft--;
+                if (timeLeft-- <= 0) { clearInterval(timerInstance); calculateScore(false); }
             }, 1000);
         }
 
         function calculateScore(manual) {
             if(manual) clearInterval(timerInstance);
             let score = 0;
-
             shuffledQuizData.forEach((item, i) => {
-                const selected = document.querySelector(`input[name="q${i}"]:checked`);
-                const questionDiv = document.getElementById(`q-item-${i}`);
-                const feedbackDiv = document.getElementById(`feedback-${i}`);
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                const qDiv = document.getElementById(`q-item-${i}`);
+                const fDiv = document.getElementById(`feedback-${i}`);
                 
-                let isCorrect = selected && selected.value === item.a;
-                
-                if (isCorrect) {
-                    score++;
-                    questionDiv.classList.add('correct-answer');
-                } else {
-                    questionDiv.classList.add('wrong-answer');
-                    feedbackDiv.style.display = "block";
-                    feedbackDiv.style.color = "#c0392b";
-                    feedbackDiv.innerHTML = `❌ الإجابة الصحيحة هي: ${item.a}`;
+                if (sel && sel.value === item.correct) { 
+                    score++; 
+                    qDiv.classList.add('correct-answer'); 
+                } else { 
+                    qDiv.classList.add('wrong-answer'); 
+                    fDiv.style.display = "block"; 
+                    fDiv.innerHTML = `❌ الإجابة الصحيحة: ${item.correct}`; 
                 }
             });
 
             const res = document.getElementById('result-box');
-            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} 30 <br> <small>استعن بالله وبالتوفيق دائما</small>`;
-            res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
-            res.style.color = score >= 10 ? "#155724" : "#721c24";
-            
+            res.style.display = "block";
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من ${shuffledQuizData.length}`;
+            res.style.background = score >= (shuffledQuizData.length / 2) ? "#d4edda" : "#f8d7da";
             document.getElementById('submit-quiz-btn').disabled = true;
             document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
-            document.querySelectorAll('input').forEach(i => i.disabled = true);
+            res.scrollIntoView({ behavior: 'smooth' });
         }
-    </script>  
-		<div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999; direction: rtl;">
- by:   <b>Ammar Barakat  <b>
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+    </script>
+
+    <div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999;">
+        by: <b>Ammar Barakat</b>
     </div>
 </body>
 </html>
