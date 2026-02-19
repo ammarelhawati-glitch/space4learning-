@@ -3,98 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فضاء للتعلم</title>
+    <title>الدوائرالكهربية</title>
     <style>
+      
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
             margin: 0; display: flex; height: 100vh; 
             background-color: #f0f4f8; overflow: hidden;
+            direction: rtl;
         }
 
+       
         .sidebar {
             width: 300px; background-color: #1e3a5f; color: white;
             display: flex; flex-direction: column; padding: 20px;
             box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+            transition: 0.4s ease; z-index: 2000; 
         }
-
         .sidebar h2 { 
             text-align: center; font-size: 1.3em; color: #90cdf4; 
-            border-bottom: 1px solid #2c5282; padding-bottom: 15px;
+            border-bottom: 1px solid #2c5282; padding-bottom: 15px; 
         }
 
-        .menu-btn {
-            background: #2a4365; color: #ebf8ff; border: none;
-            padding: 14px; margin-bottom: 10px; border-radius: 10px;
-            cursor: pointer; text-align: right; font-size: 1em;
-            transition: 0.3s; display: flex; align-items: center; gap: 10px;
+        /* 3. شريط الموبايل العلوي */
+        .mobile-header { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
+            background: #1e3a5f; color: white; align-items: center; 
+            justify-content: center; z-index: 1000; 
+            font-weight: 900; font-size: 1.4em;
+        }
+        .mobile-nav-toggle { 
+            display: none; position: fixed; top: 15px; right: 15px; 
+            z-index: 1100; cursor: pointer; background: transparent; 
+            color: white; border: none; font-size: 26px; 
+        }
+        .overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; 
+            height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; 
         }
 
+        /* 4. أزرار القائمة */
+        .menu-btn { 
+            background: #2a4365; color: #ebf8ff; border: none; 
+            padding: 14px; margin-bottom: 10px; border-radius: 10px; 
+            cursor: pointer; text-align: right; font-size: 1em; 
+            transition: 0.3s; width: 100%;
+        }
         .menu-btn:hover { background: #3182ce; }
         .menu-btn.active { background: #4299e1; font-weight: bold; }
-
         .home-btn { 
             margin-top: auto; padding: 12px; 
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            color: white; text-decoration: none; border-radius: 10px; text-align: center;
+            background: linear-gradient(135deg, #48bb78, #38a169); 
+            color: white; text-decoration: none; border-radius: 10px; text-align: center; 
         }
 
+        /* 5. منطقة المحتوى الرئيسي */
         .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
-        .display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .active-card { display: block; }
-
-        #quiz-timer {
-            background: #e74c3c; color: white; padding: 10px 20px;
-            border-radius: 8px; font-weight: bold; position: sticky; top: 0; z-index: 10;
-            display: inline-block; margin-bottom: 20px;
+        .display-card { 
+            width: 100%; height: 100%; background: white; border-radius: 15px; 
+            display: none; overflow-y: auto; padding: 20px; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
         }
+        .active-card { display: block; }
+        iframe { width: 100%; height: 100%; border: none; border-radius: 10px; }
 
-        .question-item { background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #4299e1; transition: 0.3s; }
+        /* 6. الاختبار والمؤقت */
+        #quiz-timer { 
+            background: #e74c3c; color: white; padding: 10px 20px; 
+            border-radius: 8px; font-weight: bold; position: sticky; 
+            top: 0; z-index: 10; display: inline-block; margin-bottom: 20px; 
+        }
+        .question-item { 
+            background: #f7fafc; padding: 15px; border-radius: 10px; 
+            margin-bottom: 15px; border-right: 5px solid #4299e1; 
+        }
         .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
         .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
-        .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
-        
-        iframe, object { width: 100%; height: 100%; border: none; border-radius: 10px; 
-		 .signature {
-            position: fixed; bottom: 20px; left: 20px;
-            background: rgba(30, 58, 95, 0.7); color: white;
-            padding: 8px 18px; border-radius: 50px; font-size: 13px;
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2); z-index: 9999;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); direction: ltr;
-        }
+        .feedback-text { font-weight: bold; margin-top: 10px; display: none; color: #c0392b; }
 
         @media (max-width: 768px) {
-            body { flex-direction: column; overflow-y: auto; height: auto; }
-            .sidebar { width: 100%; height: auto; position: sticky; top: 0; z-index: 100; }
-            .main-content { padding: 10px; height: 85vh; }
-        
-		
+            body { height: auto; overflow-y: auto; }
+            .sidebar { position: fixed; right: -310px; top: 0; height: 100vh; width: 280px; }
+            .sidebar.open { right: 0; }
+            .mobile-header { display: flex; }
+            .mobile-nav-toggle { display: block; }
+            .overlay.active { display: block; }
+            .main-content { padding: 75px 8px 10px 8px; height: calc(100vh - 10px); }
+        }
     </style>
 </head>
 <body>
+    <div class="mobile-header">space4learn</div>
+    <button class="mobile-nav-toggle" onclick="toggleSidebar()">☰</button>
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
-    <div class="sidebar">
-        <h2>🔌 دوائر كهربية</h2>
+    <div class="sidebar" id="sidebar">
+        <h2>🔌 الدوائرالكهربية</h2>
         <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
         <button class="menu-btn" onclick="showContent('video-div', this)">🎬 تجربة اليوتيوب</button>
         <button class="menu-btn" onclick="showContent('lab-div', this)">🧪 المختبر الافتراضي</button>
-        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 اختبارال40 سؤال</button>
+        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 الاختبار الذكي</button>
         <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
     </div>
 
     <div class="main-content">
         <div id="pdf-div" class="display-card active-card">
-             <div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%;
- padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
- border-radius: 8px; will-change: transform;">
-  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-    src="https://www.canva.com/design/DAG9zQ9T5c8/dC0X2WEgr1JdvIraRNNBuQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-  </iframe>
-</div>
-<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAG9zQ9T5c8&#x2F;dC0X2WEgr1JdvIraRNNBuQ&#x2F;view?utm_content=DAG9zQ9T5c8&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">Electric Circuits</a> by Ammar Barakat
-                </div>
-            </object>
+            <iframe src="https://www.canva.com/design/DAG9zQ9T5c8/dC0X2WEgr1JdvIraRNNBuQ/view?embed" allowfullscreen></iframe>
+            <p style="text-align: center; margin-top: 10px; font-weight: bold; color: #1e3a5f;"></p>
         </div>
 
         <div id="video-div" class="display-card">
@@ -102,102 +118,101 @@
         </div>
 
         <div id="lab-div" class="display-card">
-            <iframe src="https://phet.colorado.edu/sims/html/circuit-construction-kit-dc/latest/circuit-construction-kit-dc_ar.html"></iframe>
+           <iframe src="https://phet.colorado.edu/sims/html/circuit-construction-kit-dc/latest/circuit-construction-kit-dc_ar.html"></iframe>
         </div>
 
         <div id="quiz-div" class="display-card">
             <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
-            <h3>📝 اختبار دوائر </h3>
-            <div id="quiz-container"></div>
-            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
-            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
+            <h3>📝 اختبار الدوائر</h3>
+            <div id="quiz-container">جاري تحميل الأسئلة...</div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 20px;">إرسال ومعرفة الأخطاء</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px; display: none;"></div>
         </div>
     </div>
 
     <script>
+        // دمج YouTube API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'mggRRNm-aH8',
+                playerVars: { 'rel': 0, 'showinfo': 0, 'enablejsapi': 1 }
+            });
+        }
+
         let timerInstance;
         let timeLeft = 600; 
         let quizLoaded = false;
         let shuffledQuizData = [];
 
-        const originalQuizData = [
-{ q: "ما هو الرمز الذي يُستخدم للتعبير عن المقاومة الداخلية للعمود؟", opts: ["م خ", "م د", "ق.د.ك", "جـ"], a: "م د" },
-    { q: "المقاومة التي يواجهها التيار الكهربائي 'داخل' العمود تسمى:", opts: ["المقاومة الخارجية", "المقاومة النوعية", "المقاومة الداخلية", "المقاومة المكافئة"], a: "المقاومة الداخلية" },
-    { q: "يرمز للقوة الدافعة الكهربائية للعمود بالرمز:", opts: ["جـ", "ت", "م د", "ق.د.ك"], a: "ق.د.ك" },
-    { q: "عند توصيل عمود بموصل، يسري التيار خارج العمود من القطب:", opts: ["السالب إلى الموجب", "الموجب إلى السالب", "الموجب إلى الأرض", "السالب إلى الأرض"], a: "الموجب إلى السالب" },
-    { q: "داخل العمود الكهربائي، يسري التيار من القطب:", opts: ["الموجب إلى السالب", "السالب إلى الموجب", "الشمالي إلى الجنوبي", "لا يسري تيار"], a: "السالب إلى الموجب" },
-    { q: "قانون أوم للدائرة الكاملة ينص على أن ق.د.ك تساوي مجموع فروق الجهد في:", opts: ["المقاومة الخارجية فقط", "المقاومة الداخلية فقط", "المقاومتين الخارجية والداخلية", "الأسلاك فقط"], a: "المقاومتين الخارجية والداخلية" },
-    { q: "الصيغة الرياضية لقانون أوم للدائرة الكاملة هي ق.د.ك = ت × (.......):", opts: ["م د - م خ", "م د + م خ", "م د ÷ م خ", "م خ ÷ م د"], a: "م د + م خ" },
-    { q: "فرق الجهد بين طرفي البطارية (جـ) يُحسب من العلاقة:", opts: ["جـ = ق.د.ك + (ت × م د)", "جـ = ق.د.ك - (ت × م د)", "جـ = ت × م د", "جـ = ق.د.ك"], a: "جـ = ق.د.ك - (ت × م د)" },
-    { q: "لماذا يكون فرق الجهد (جـ) أقل من ق.د.ك للبطارية؟", opts: ["بسبب المقاومة الخارجية", "بسبب استهلاك طاقة في المقاومة الداخلية", "بسبب طول الأسلاك", "بسبب زيادة التيار"], a: "بسبب استهلاك طاقة في المقاومة الداخلية" },
-    { q: "المقدار (ت × م د) يمثل:", opts: ["الجهد الخارجي", "الهبوط في الجهد داخل البطارية", "القوة الدافعة", "المقاومة الكلية"], a: "الهبوط في الجهد داخل البطارية" },
-    { q: "إذا كانت الدائرة مفتوحة (ت = صفر)، فإن فرق الجهد بين قطبي البطارية:", opts: ["يساوي ق.د.ك", "يساوي صفر", "أقل من ق.د.ك", "أكبر من ق.د.ك"], a: "يساوي ق.د.ك" },
-    { q: "في حالة التوصيل على التوالي، شدة التيار المار في كل المقاومات تكون:", opts: ["موزعة", "متساوية", "متضاعفة", "منعدمة"], a: "متساوية" },
-    { q: "المقاومة المكافئة (م) لمقاومتين متصلتين على التوالي (م١، م٢) هي:", opts: ["م١ × م٢", "م١ + م٢", "١/م١ + ١/م٢", "م١ - م٢"], a: "م١ + م٢" },
-    { q: "في التوصيل على التوازي، فرق الجهد الكلي (جـ) يكون:", opts: ["مجموع فروق الجهد", "موزعاً على المقاومات", "متساوياً بين طرفي كل مقاومة", "ضعف التيار"], a: "متساوياً بين طرفي كل مقاومة" },
-    { q: "مقلوب المقاومة المكافئة في التوصيل على التوازي يساوي:", opts: ["مجموع المقاومات", "مجموع مقلوب المقاومات", "حاصل ضرب المقاومات", "التيار الكلي"], a: "مجموع مقلوب المقاومات" },
-    { q: "عند توصيل عدة أعمدة كهربائية على التوالي، فإن ق.د.ك الكلية تساوي:", opts: ["ق١ + ق٢ + ق٣", "ق١ = ق٢ = ق٣", "١/ق١ + ١/ق٢", "ق١ × ق٢"], a: "ق١ + ق٢ + ق٣" },
-    { q: "توصيل الأعمدة على التوالي يُستخدم للحصول على:", opts: ["تيار عالٍ", "قوة دافعة كهربائية أكبر", "مقاومة داخلية أقل", "جهد ثابت"], a: "قوة دافعة كهربائية أكبر" },
-    { q: "عند توصيل أعمدة متساوية على التوازي، فإن ق.د.ك المحصلة تساوي:", opts: ["مجموع القوى للأعمدة", "القوة الدافعة لعمود واحد فقط", "ضعف القوة الدافعة", "صفر"], a: "القوة الدافعة لعمود واحد فقط" },
-    { q: "توصيل الأعمدة على التوازي يُستخدم للحصول على:", opts: ["قوة دافعة أكبر", "تيار كهربائي عالٍ لمدة أطول", "مقاومة داخلية كبيرة", "فرق جهد متغير"], a: "تيار كهربائي عالٍ لمدة أطول" },
-    { q: "في بطارية السيارة، يتم توصيل الخلايا على التوازي لزيادة:", opts: ["الجهد إلى ١٢ فولت", "شدة التيار (الأمبير)", "المقاومة الداخلية", "الوزن"], a: "شدة التيار (الأمبير)" },
-    { q: "إذا وُصل عمود قوته ٢ فولت في دائرة بطريقة معكوسة مع عمودين آخرين (٢ فولت لكل منهما) على التوالي، المحصلة تكون:", opts: ["٦ فولت", "٤ فولت", "٢ فولت", "صفر"], a: "٢ فولت" },
-    { q: "المقاومة الكلية للدائرة هي مجموع:", opts: ["م خ + م د", "م خ فقط", "م د فقط", "جـ + ت"], a: "م خ + م د" },
-    { q: "وحدة قياس شدة التيار (ت) هي:", opts: ["الفولت", "الأوم", "الأمبير", "الوات"], a: "الأمبير" },
-    { q: "عند زيادة المقاومة الخارجية في الدائرة، فإن شدة التيار الكلي:", opts: ["تزداد", "تقل", "تبقى ثابتة", "تتضاعف"], a: "تقل" },
-    { q: "الجهاز المستخدم لقياس فرق الجهد هو:", opts: ["الأميتر", "الفولتميتر", "الأومميتر", "البارومتر"], a: "الفولتميتر" },
-    { q: "في التوصيل على التوازي، المقاومة المكافئة تكون دائماً ....... من أصغر مقاومة:", opts: ["أكبر", "أصغر", "مساوية", "ضعف"], a: "أصغر" },
-    { q: "إذا وُصلت مقاومتان (٦ أوم، ١٢ أوم) على التوازي، المقاومة المكافئة لهما هي:", opts: ["١٨ أوم", "٦ أوم", "٤ أوم", "٢ أوم"], a: "٤ أوم" },
-    { q: "في مثال الكتاب، عمود ١.٥ فولت يعطي فرق جهد عند توصيله بموصل يسمى:", opts: ["ت", "م د", "جـ", "ق.د.ك"], a: "جـ" },
-    { q: "لحساب التيار (ت) نستخدم العلاقة:", opts: ["ق.د.ك ÷ المقاومة الكلية", "جـ × م", "ق.د.ك - جـ", "م خ + م د"], a: "ق.د.ك ÷ المقاومة الكلية" },
-    { q: "يُرمز لمقاومة الموصل الخارجي بالرمز:", opts: ["م د", "م خ", "م م", "م ك"], a: "م خ" },
-    { q: "الأعمدة الكهربائية الجافة (البطاريات) تُعتبر مصادر لـ:", opts: ["المقاومة", "الجهد الكهربائي", "التيار المتردد", "الشحنات الساكنة"], a: "الجهد الكهربائي" },
-    { q: "عند توصيل مقاومتين على التوالي، الجهد الكلي (جـ) يساوي:", opts: ["جـ١ = جـ٢", "جـ١ + جـ٢", "جـ١ × جـ٢", "جـ١ ÷ جـ٢"], a: "جـ١ + جـ٢" },
-    { q: "إذا كانت م د = صفر، فإن فرق الجهد بين طرفي البطارية:", opts: ["أقل من ق.د.ك", "أكبر من ق.د.ك", "يساوي ق.د.ك دائماً", "يساوي صفر"], a: "يساوي ق.د.ك دائماً" },
-    { q: "شدة التيار المار في دائرة بها بطارية ٢٠ فولت ومقاومة كلية ١٠ أوم هي:", opts: ["٢٠٠ أمبير", "٠.٥ أمبير", "٢ أمبير", "١٠ أمبير"], a: "٢ أمبير" },
-    { q: "المقاومة الداخلية تؤدي إلى تحول جزء من الطاقة الكهربائية إلى طاقة:", opts: ["كيميائية", "حرارية", "ضوئية", "حركية"], a: "حرارية" },
-    { q: "في الدائرة (الشكل ٩-٣)، يُرسم العمود الكهربائي وداخله المقاومة:", opts: ["م خ", "م د", "ت", "جـ"], a: "م د" },
-    { q: "توزيع التيار على المقاومات يحدث فقط في حالة التوصيل على:", opts: ["التوالي", "التوازي", "الدائرة المفتوحة", "الأعمدة"], a: "التوازي" },
-    { q: "مجموع فروق الجهد عبر المقاومات الخارجية والداخلية يسمى:", opts: ["فرق الجهد جـ", "القوة الدافعة الكهربائية", "التيار الكلي", "المقاومة النوعية"], a: "القوة الدافعة الكهربائية" },
-    { q: "عند توصيل ١٢ عموداً (٢ فولت لكل منها) على التوالي، الجهد الكلي هو:", opts: ["٢ فولت", "١٢ فولت", "٢٤ فولت", "٦ فولت"], a: "٢٤ فولت" },
-    { q: "تستخدم المقاومات في الدوائر للتحكم في شدة:", opts: ["الجهد", "التيار", "القوة الدافعة", "الحرارة"], a: "التيار" }      
-];
-        // دالة الخلط العشوائي
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
         function showContent(id, btn) {
+            // إيقاف الفيديو عند التبديل
+            if (player && typeof player.pauseVideo === 'function') {
+                if (id !== 'video-div') player.pauseVideo();
+            }
+
             document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            
             document.getElementById(id).classList.add('active-card');
             btn.classList.add('active');
-            if(id === 'quiz-div' && !quizLoaded) { prepareAndLoadQuiz(); startTimer(); quizLoaded = true; }
+
+            if (id === 'quiz-div' && !quizLoaded) { 
+                fetchAndLoadQuiz(); 
+                quizLoaded = true; 
+            }
+
+            if (window.innerWidth <= 768) toggleSidebar();
         }
 
-        function prepareAndLoadQuiz() {
-            // خلط الأسئلة أولاً
-            shuffledQuizData = shuffle([...originalQuizData]);
-            
+        async function fetchAndLoadQuiz() {
+            try {
+                const response = await fetch('questions.json');
+                if (!response.ok) throw new Error("فشل التحميل");
+                const allData = await response.json();
+                
+                const lightQuestions = allData.filter(item => item.topic === "circuits");
+
+                if (lightQuestions.length === 0) {
+                    document.getElementById('quiz-container').innerHTML = "<p>لا توجد أسئلة متوفرة حالياً.</p>";
+                    return;
+                }
+
+                shuffledQuizData = shuffle(lightQuestions.map(item => ({
+                    q: item.question,
+                    options: shuffle([item.option1, item.option2, item.option3, item.option4]),
+                    correct: item.answer
+                })));
+
+                renderQuiz();
+                startTimer();
+            } catch (error) {
+                document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، فشل تحميل الأسئلة.</p>";
+            }
+        }
+
+        function renderQuiz() {
             const container = document.getElementById('quiz-container');
-            container.innerHTML = shuffledQuizData.map((item, i) => {
-                // خلط الخيارات لكل سؤال بشكل مستقل
-                const shuffledOptions = shuffle([...item.opts]);
-                return `
-                    <div class="question-item" id="q-item-${i}">
-                        <p><b>${i+1}. ${item.q}</b></p>
-                        ${shuffledOptions.map((opt, oi) => `
-                            <label style="display:block; margin:5px 0; cursor:pointer;">
-                                <input type="radio" name="q${i}" value="${opt}"> ${opt}
-                            </label>`).join('')}
-                        <div id="feedback-${i}" class="feedback-text"></div>
-                    </div>
-                `;
-            }).join('');
+            container.innerHTML = shuffledQuizData.map((item, i) => `
+                <div class="question-item" id="q-item-${i}">
+                    <p><b>${i+1}. ${item.q}</b></p>
+                    ${item.options.map(opt => `
+                        <label style="display:block; margin:8px 0; cursor:pointer;">
+                            <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                    <div id="feedback-${i}" class="feedback-text"></div>
+                </div>
+            `).join('');
         }
 
         function startTimer() {
@@ -205,45 +220,45 @@
                 let min = Math.floor(timeLeft / 60);
                 let sec = timeLeft % 60;
                 document.getElementById('timer-display').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
-                if (timeLeft <= 0) { clearInterval(timerInstance); calculateScore(false); }
-                timeLeft--;
+                if (timeLeft-- <= 0) { clearInterval(timerInstance); calculateScore(false); }
             }, 1000);
         }
 
         function calculateScore(manual) {
             if(manual) clearInterval(timerInstance);
             let score = 0;
-
             shuffledQuizData.forEach((item, i) => {
-                const selected = document.querySelector(`input[name="q${i}"]:checked`);
-                const questionDiv = document.getElementById(`q-item-${i}`);
-                const feedbackDiv = document.getElementById(`feedback-${i}`);
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                const qDiv = document.getElementById(`q-item-${i}`);
+                const fDiv = document.getElementById(`feedback-${i}`);
                 
-                let isCorrect = selected && selected.value === item.a;
-                
-                if (isCorrect) {
-                    score++;
-                    questionDiv.classList.add('correct-answer');
-                } else {
-                    questionDiv.classList.add('wrong-answer');
-                    feedbackDiv.style.display = "block";
-                    feedbackDiv.style.color = "#c0392b";
-                    feedbackDiv.innerHTML = `❌ الإجابة الصحيحة هي: ${item.a}`;
+                if (sel && sel.value === item.correct) { 
+                    score++; 
+                    qDiv.classList.add('correct-answer'); 
+                } else { 
+                    qDiv.classList.add('wrong-answer'); 
+                    fDiv.style.display = "block"; 
+                    fDiv.innerHTML = `❌ الإجابة الصحيحة: ${item.correct}`; 
                 }
             });
 
             const res = document.getElementById('result-box');
-            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} 40  <br> <small>استعن بالله وبالتوفيق دائما</small>`;
-            res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
-            res.style.color = score >= 10 ? "#155724" : "#721c24";
-            
+            res.style.display = "block";
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من ${shuffledQuizData.length}`;
+            res.style.background = score >= (shuffledQuizData.length / 2) ? "#d4edda" : "#f8d7da";
             document.getElementById('submit-quiz-btn').disabled = true;
             document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
-            document.querySelectorAll('input').forEach(i => i.disabled = true);
+            res.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
         }
     </script>
-	<div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999; direction: rtl;">
- by:   <b>Ammar Barakat<b>
+
+    <div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999;">
+        by: <b>Ammar Barakat</b>
     </div>
 </body>
 </html>
