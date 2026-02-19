@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فضاء للتعلم</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; display: flex; height: 100vh; 
+            background-color: #f0f4f8; overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px; background-color: #1e3a5f; color: white;
+            display: flex; flex-direction: column; padding: 20px;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+        }
+
+        .sidebar h2 { 
+            text-align: center; font-size: 1.3em; color: #90cdf4; 
+            border-bottom: 1px solid #2c5282; padding-bottom: 15px;
+        }
+
+        .menu-btn {
+            background: #2a4365; color: #ebf8ff; border: none;
+            padding: 14px; margin-bottom: 10px; border-radius: 10px;
+            cursor: pointer; text-align: right; font-size: 1em;
+            transition: 0.3s; display: flex; align-items: center; gap: 10px;
+        }
+
+        .menu-btn:hover { background: #3182ce; }
+        .menu-btn.active { background: #4299e1; font-weight: bold; }
+
+        .home-btn { 
+            margin-top: auto; padding: 12px; 
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white; text-decoration: none; border-radius: 10px; text-align: center;
+        }
+
+        .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
+        .display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .active-card { display: block; }
+
+        #quiz-timer {
+            background: #e74c3c; color: white; padding: 10px 20px;
+            border-radius: 8px; font-weight: bold; position: sticky; top: 0; z-index: 10;
+            display: inline-block; margin-bottom: 20px;
+        }
+
+        .question-item { background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #4299e1; transition: 0.3s; }
+        .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
+        .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
+        .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
+        
+        iframe, object { width: 100%; height: 100%; border: none; border-radius: 10px; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; position: sticky; top: 0; z-index: 100; }
+            .main-content { padding: 10px; height: 85vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>🧲المغناطيسية </h2>
+        <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
+        <button class="menu-btn" onclick="showContent('video-div', this)">🎬 الخطوط المغناطيسية -معمل </button>
+        <button class="menu-btn" onclick="showContent('lab-div', this)">🎬  الأرض المغناطيس الضخم -معمل</button>
+        <button class="menu-btn" onclick="showContent('lab1-div', this)">🧪  المغناطيس -الخطوط المغناطيسية</button>
+		<button class="menu-btn" onclick="showContent('quiz-div', this)">📝 اختبار ال30سؤال</button>
+        <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
+    </div>
+
+    <div class="main-content">
+        <div id="pdf-div" class="display-card active-card">
+        <div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https://www.canva.com/design/DAG9P0pOGjM/bBjv2yVvOdzuuvEyif4PeQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+</div>
+<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAG9P0pOGjM&#x2F;bBjv2yVvOdzuuvEyif4PeQ&#x2F;view?utm_content=DAG9P0pOGjM&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">Magnetism</a> by Ammar Barakat
+        </div>
+
+        <div id="video-div" class="display-card">
+		<iframe width="843" height="258" src="https://www.youtube.com/embed/fajjY9DH4Bo" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+
+        <div id="lab-div" class="display-card">
+         <iframe width="843" height="258" src="https://www.youtube.com/embed/uwK8KW_WtHs" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+		 <div id="lab1-div" class="display-card">
+            <iframe src="https://phet.colorado.edu/sims/html/magnet-and-compass/latest/magnet-and-compass_all.html"></iframe>
+        </div>
+
+        <div id="quiz-div" class="display-card">
+            <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
+            <h3>📝اختبار المغناطيسية - المدة 10 دقائق</h3>
+            <div id="quiz-container"></div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let timerInstance;
+        let timeLeft = 600; 
+        let quizLoaded = false;
+        let shuffledQuizData = [];
+
+        const originalQuizData = [
+{ q: "الرمز الإغريقي الذي يعبر عن الفيض المغناطيسي الكلي هو:", o: ["Φ", "ب", "µ", "س"], a: "Φ" },
+        { q: "كثافة الفيض المغناطيسي يرمز لها بالرمز العربي:", o: ["ب", "Φ", "ق", "ج"], a: "ب" },
+        { q: "القانون الرياضي الصحيح هو:", o: ["ب = Φ / س", "ب = Φ × س", "Φ = ب / س", "ب = µ / Φ"], a: "ب = Φ / س" },
+        { q: "النفاذية المغناطيسية للوسط يرمز لها بالرمز الإغريقي:", o: ["µ", "Φ", "ب", "Ω"], a: "µ" },
+        { q: "وحدة قياس كثافة الفيض (ب) هي التيسلا وهي تعادل:", o: ["ويبر / م²", "ويبر . م²", "نيوتن / كولوم", "فولت / م"], a: "ويبر / م²" },
+        { q: "عندما تكون خطوط الفيض (Φ) موازية للمساحة (س) فإن قيمتها تكون:", o: ["صفر", "أكبر ما يمكن", "متوسطة", "µ / س"], a: "صفر" },
+        { q: "تتناسب القوة المغناطيسية (ق) عكسياً مع:", o: ["مربع المسافة (ف²)", "شدة القطب (ش)", "النفاذية (µ)", "المساحة (س)"], a: "مربع المسافة (ف²)" },
+        { q: "1 ويبر يعادل كم من خطوط الفيض (Φ)؟", o: ["10^8", "10^5", "10^10", "10^2"], a: "10^8" },
+        { q: "قيمة النفاذية (µ) للهواء تساوي تقريباً:", o: ["4π × 10^-7", "4π × 10^7", "2π × 10^-7", "10^5"], a: "4π × 10^-7" },
+        { q: "إذا وضع قلب من الحديد (µ كبيرة) داخل ملف فإن كثافة الفيض (ب):", o: ["تزداد", "تقل", "تتلاشى", "تبقى ثابتة"], a: "تزداد" },
+        { q: "الماكسويل هو وحدة قياس الرمز:", o: ["Φ", "ب", "µ", "ق"], a: "Φ" },
+        { q: "الرمز (س) في قانون كثافة الفيض يشير إلى:", o: ["المساحة", "المسافة", "السرعة", "السعة"], a: "المساحة" },
+        { q: "تتجه خطوط المجال (ب) خارج المغناطيس من القطب:", o: ["الشمالي إلى الجنوبي", "الجنوبي إلى الشمالي", "الشرق إلى الغرب", "لا تتحرك"], a: "الشمالي إلى الجنوبي" },
+        { q: "القوة المغناطيسية (ق) بين قطبين تعتمد طردياً على:", o: ["حاصل ضرب شدتي القطبين", "المسافة بينهما", "مربع المسافة", "الزمن"], a: "حاصل ضرب شدتي القطبين" },
+        { q: "تتركز قوة المغناطيس (ق) بأكبر كثافة عند:", o: ["القطبين", "المنتصف", "محور الخمول", "جميع الأجزاء بالتساوي"], a: "القطبين" },
+        { q: "الجهاز المستخدم لتحديد اتجاه خطوط (ب) هو:", o: ["البوصلة", "الأموميتر", "الفولتميتر", "الباروميتر"], a: "البوصلة" },
+        { q: "العلاقة ق = ث م (ش1 ش2 / ف²) تسمى قانون:", o: ["التربيع العكسي", "أوم", "بقاء المادة", "التربيع الطردي"], a: "التربيع العكسي" },
+        { q: "الفيض المغناطيسي (Φ) الذي يمر عمودياً على وحدة المساحات هو:", o: ["ب", "µ", "ق", "س"], a: "ب" },
+        { q: "في قانون القوة، الرمز (ش) يعبر عن:", o: ["شدة القطب", "الشغل", "شدة التيار", "الشحنة"], a: "شدة القطب" },
+        { q: "وحدة قياس (ب) تسمى أيضاً:", o: ["تيسلا", "هنري", "فاراد", "وات"], a: "تيسلا" },
+        { q: "إذا زادت المساحة (س) مع ثبوت الفيض (Φ) فإن الكثافة (ب):", o: ["تقل", "تزداد", "لا تتغير", "تتضاعف"], a: "تقل" },
+        { q: "أي الرموز التالية يمثل نفاذية الوسط؟", o: ["µ", "Φ", "β", "α"], a: "µ" },
+        { q: "خطوط المجال المغناطيسي هي خطوط وهمية:", o: ["لا تتقاطع", "تتقاطع عند القطبين", "مستقيمة دائماً", "تتحرك عشوائياً"], a: "لا تتقاطع" },
+        { q: "يمكن رؤية تخطيط المجال (ب) باستخدام:", o: ["برادة الحديد", "العدسات", "محلول ملحي", "ورق دوار الشمس"], a: "برادة الحديد" },
+        { q: "ثابت التناسب في القوة المغناطيسية يعتمد على الرمز:", o: ["µ", "س", "ف", "ق"], a: "µ" },
+        { q: "1 تيسلا تساوي:", o: ["1 ويبر / م²", "10 ويبر / م²", "100 ويبر / م²", "1 ويبر . م²"], a: "1 ويبر / م²" },
+        { q: "الفيض (Φ) هو كمية:", o: ["قياسية", "متجهة", "منعدمة دائماً", "متغيرة مع الزمن فقط"], a: "قياسية" },
+        { q: "عند تقريب قطب شمالي من قطب جنوبي تنشأ قوة:", o: ["تجاذب", "تنافر", "احتكاك", "انعدام"], a: "تجاذب" },
+        { q: "وحدة قياس (µ) في النظام الدولي هي:", o: ["ويبر / أمبير . متر", "تسلا / متر", "نيوتن / كولوم", "فولت . ثانية"], a: "ويبر / أمبير . متر" },
+        { q: "كثافة الفيض (ب) تعبر عن:", o: ["شدة المجال المغناطيسي", "فرق الجهد", "المقاومة النوعية", "كمية الحرارة"], a: "شدة المجال المغناطيسي" }
+		];
+// دالة الخلط العشوائي
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function showContent(id, btn) {
+            document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active-card');
+            btn.classList.add('active');
+            if(id === 'quiz-div' && !quizLoaded) { prepareAndLoadQuiz(); startTimer(); quizLoaded = true; }
+        }
+
+        function prepareAndLoadQuiz() {
+            // خلط الأسئلة أولاً
+            shuffledQuizData = shuffle([...originalQuizData]);
+            
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = shuffledQuizData.map((item, i) => {
+                // خلط الخيارات لكل سؤال بشكل مستقل
+                const shuffledOptions = shuffle([...item.o]);
+                return `
+                    <div class="question-item" id="q-item-${i}">
+                        <p><b>${i+1}. ${item.q}</b></p>
+                        ${shuffledOptions.map((opt, oi) => `
+                            <label style="display:block; margin:5px 0; cursor:pointer;">
+                                <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                            </label>`).join('')}
+                        <div id="feedback-${i}" class="feedback-text"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startTimer() {
+            timerInstance = setInterval(() => {
+                let min = Math.floor(timeLeft / 60);
+                let sec = timeLeft % 60;
+                document.getElementById('timer-display').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
+                if (timeLeft <= 0) { clearInterval(timerInstance); calculateScore(false); }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function calculateScore(manual) {
+            if(manual) clearInterval(timerInstance);
+            let score = 0;
+
+            shuffledQuizData.forEach((item, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const questionDiv = document.getElementById(`q-item-${i}`);
+                const feedbackDiv = document.getElementById(`feedback-${i}`);
+                
+                let isCorrect = selected && selected.value === item.a;
+                
+                if (isCorrect) {
+                    score++;
+                    questionDiv.classList.add('correct-answer');
+                } else {
+                    questionDiv.classList.add('wrong-answer');
+                    feedbackDiv.style.display = "block";
+                    feedbackDiv.style.color = "#c0392b";
+                    feedbackDiv.innerHTML = `❌ الإجابة الصحيحة هي: ${item.a}`;
+                }
+            });
+
+            const res = document.getElementById('result-box');
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} 30 <br> <small>استعن بالله وبالتوفيق دائما</small>`;
+            res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
+            res.style.color = score >= 10 ? "#155724" : "#721c24";
+            
+            document.getElementById('submit-quiz-btn').disabled = true;
+            document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
+            document.querySelectorAll('input').forEach(i => i.disabled = true);
+        }
+    </script> 
+		<div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999; direction: rtl;">
+ by:   <b>Ammar Barakat  </b>
+    </div>
+</body>
+</html>
