@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فضاءللتعلم </title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            margin: 0; display: flex; height: 100vh; 
+            background-color: #f0f4f8; overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px; background-color: #1e3a5f; color: white;
+            display: flex; flex-direction: column; padding: 20px;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+        }
+
+        .sidebar h2 { 
+            text-align: center; font-size: 1.3em; color: #90cdf4; 
+            border-bottom: 1px solid #2c5282; padding-bottom: 15px;
+        }
+
+        .menu-btn {
+            background: #2a4365; color: #ebf8ff; border: none;
+            padding: 14px; margin-bottom: 10px; border-radius: 10px;
+            cursor: pointer; text-align: right; font-size: 1em;
+            transition: 0.3s; display: flex; align-items: center; gap: 10px;
+        }
+
+        .menu-btn:hover { background: #3182ce; }
+        .menu-btn.active { background: #4299e1; font-weight: bold; }
+
+        .home-btn { 
+            margin-top: auto; padding: 12px; 
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white; text-decoration: none; border-radius: 10px; text-align: center;
+        }
+
+        .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
+        .display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .active-card { display: block; }
+
+        #quiz-timer {
+            background: #e74c3c; color: white; padding: 10px 20px;
+            border-radius: 8px; font-weight: bold; position: sticky; top: 0; z-index: 10;
+            display: inline-block; margin-bottom: 20px;
+        }
+
+        .question-item { background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #4299e1; transition: 0.3s; }
+        .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
+        .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
+        .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
+        
+        iframe, object { width: 100%; height: 100%; border: none; border-radius: 10px; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; position: sticky; top: 0; z-index: 100; }
+            .main-content { padding: 10px; height: 85vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>⚛️الذرة وبنيتها</h2>
+        <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
+        <button class="menu-btn" onclick="showContent('video-div', this)">🎬 تجربة اليوتيوب</button>
+        <button class="menu-btn" onclick="showContent('lab-div', this)">🧪  (1)تجربة رذرفورد</button>
+		<button class="menu-btn" onclick="showContent('quiz-div', this)">📝اختبارال 40 سؤال</button>
+        <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
+    </div>
+
+    <div class="main-content">
+        <div id="pdf-div" class="display-card active-card">
+          <div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https://www.canva.com/design/DAG83vLxwT0/eG8uiInQ1s10g9UT3qfFDQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+</div>
+<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAG83vLxwT0&#x2F;eG8uiInQ1s10g9UT3qfFDQ&#x2F;view?utm_content=DAG83vLxwT0&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">Atomic Structure</a> by Ammar Barakat
+        </div>
+
+        <div id="video-div" class="display-card">
+            <iframe src="https://www.youtube.com/embed/w2s2fZr8sqQ" allowfullscreen></iframe>
+        </div>
+
+        <div id="lab-div" class="display-card">
+            <iframe src="https://phet.colorado.edu/sims/html/rutherford-scattering/latest/rutherford-scattering_ar.html"></iframe>
+        </div>
+
+        <div id="quiz-div" class="display-card">
+            <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
+            <h3>📝اختبار الذرة وبنيتها- ملاحظة ن = عد</h3>
+            <div id="quiz-container"></div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let timerInstance;
+        let timeLeft = 600; 
+        let quizLoaded = false;
+        let shuffledQuizData = [];
+
+        const originalQuizData = [
+{ q: "مكتشف النواة هو العالم:", opts: ["طومسون", "رذرفورد", "بور", "نيوتن"], a: "رذرفورد" },
+    { q: "شحنة النواة في ذرة رذرفورد هي:", opts: ["سالبة", "متعادلة", "موجبة", "لا شحنة لها"], a: "موجبة" },
+    { q: "فشل نموذج رذرفورد لأنه افترض أن الإلكترون يشع طاقة ويسقط في مسار:", opts: ["دائري ثابت", "حلزوني", "مستقيم", "بيضاوي"], a: "حلزوني" },
+    { q: "العالم الذي وضع فرضيات مستويات الطاقة هو:", opts: ["رذرفورد", "بور", "اينشتاين", "ماكسويل"], a: "بور" },
+    { q: "في مدارات بور، لا يشع الإلكترون طاقة طالما بقي في:", opts: ["حالة حركة", "مداره الثابت", "حالة إثارة", "قرب النواة"], a: "مداره الثابت" },
+    { q: "تحسب قوة الجذب الكهربائي بين النواة والإلكترون بقانون:", opts: ["نيوتن", "كولوم", "أوم", "فاراداي"], a: "كولوم" },
+    { q: "طاقة الإلكترون في أي مستوى تكون دائماً ذات قيمة:", opts: ["موجبة", "سالبة", "صفر", "متغيرة"], a: "سالبة" },
+    { q: "القيمة السالبة لطاقة الإلكترون تعني أنه:", opts: ["حر تماماً", "مرتبط بالذرة", "مشع للطاقة", "ساكن"], a: "مرتبط بالذرة" },
+    { q: "طاقة المستوى الأول (الأرضي) لذرة الهيدروجين تساوي:", opts: ["-3.4 إ.ف", "-13.6 إ.ف", "-1.51 إ.ف", "صفر"], a: "-13.6 إ.ف" },
+    { q: "تحسب طاقة المستوى (ط ن) من العلاقة:", opts: ["-13.6 / ن", "-13.6 / ن²", "13.6 × ن²", "-13.6 × ن"], a: "-13.6 / ن²" },
+    { q: "عند انتقال الإلكترون من مستوى أعلى إلى أدنى فإنه يطلق:", opts: ["إلكتروناً", "فوتوناً", "بروتوناً", "نيوتروناً"], a: "فوتوناً" },
+    { q: "طاقة الفوتون المشع تساوي:", opts: ["ط1 + ط2", "ط2 - ط1", "ط1 / ط2", "صفر"], a: "ط2 - ط1" },
+    { q: "وحدة الإلكترون فولت (إ.ف) هي وحدة قياس:", opts: ["الجهد", "التيار", "الطاقة", "المقاومة"], a: "الطاقة" },
+    { q: "1 إلكترون فولت يساوي بالجول:", opts: ["1.6 × 10⁻¹⁹", "9.1 × 10⁻³¹", "3 × 10⁸", "6.6 × 10⁻³⁴"], a: "1.6 × 10⁻¹⁹" },
+    { q: "تصبح الذرة مثارة عندما يكتسب الإلكترون طاقة تنقله إلى:", opts: ["مستوى أدنى", "مستوى أعلى", "داخل النواة", "خارج الذرة"], a: "مستوى أعلى" },
+    { q: "الجهاز المستخدم لتحليل ضوء الذرات يسمى:", opts: ["الميكروسكوب", "منظار الطيف", "التليسكوب", "البارومتر"], a: "منظار الطيف" },
+    { q: "تتأين الذرة إذا أصبحت طاقة الإلكترون:", opts: ["سالبة جداً", "صفر أو أكثر", "-13.6", "نصف طاقة الوضع"], a: "صفر أو أكثر" },
+    { q: "طاقة المستوى الثاني (ن=2) في الهيدروجين تساوي:", opts: ["-13.6", "-6.8", "-3.4", "-1.5"], a: "-3.4" },
+    { q: "نصف قطر مدار الإلكترون يتناسب مع مربع:", opts: ["السرعة", "رقم المستوى ن", "الشحنة", "الكتلة"], a: "رقم المستوى ن" },
+    { q: "طاقة الوضع للإلكترون في المدار تكون قيمتها:", opts: ["ضعف الطاقة الكلية", "نصف الطاقة الكلية", "تساوي الحركية", "صفر"], a: "ضعف الطاقة الكلية" },
+    { q: "في ذرة الهيدروجين، كلما زاد رقم المستوى (ن) فإن الطاقة:", opts: ["تقل", "تزداد (تقترب من الصفر)", "تبقى ثابتة", "تتضاعف"], a: "تزداد (تقترب من الصفر)" },
+    { q: "تسمى مجموعة خطوط الطيف المنبعثة من الذرة بـ:", opts: ["الطيف المستمر", "طيف الانبعاث الخطي", "الأشعة السينية", "طيف الامتصاص"], a: "طيف الانبعاث الخطي" },
+    { q: "قوة الجذب المركزية للإلكترون تساوي القوة:", opts: ["المغناطيسية", "الكهربائية (كولوم)", "النووية القوية", "الجاذبية"], a: "الكهربائية (كولوم)" },
+    { q: "استخدم بور ثابت بلانك لحساب:", opts: ["كتلة الإلكترون", "كمية التحرك الزاوي", "شحنة النواة", "سرعة الضوء"], a: "كمية التحرك الزاوي" },
+    { q: "طاقة المستوى الثالث (ن=3) تساوي تقريباً:", opts: ["-13.6", "-3.4", "-1.51", "-0.85"], a: "-1.51" },
+    { q: "عندما يكون الإلكترون في المستوى ن=∞ فإن طاقته تساوي:", opts: ["-13.6", "13.6", "صفر", "مالانهاية"], a: "صفر" },
+    { q: "يعتمد طيف الانبعاث لأي عنصر على:", opts: ["درجة الحرارة فقط", "نوع العنصر", "حجم العينة", "الضغط الخارجي"], a: "نوع العنصر" },
+    { q: "عندما يمتص الإلكترون فوتوناً طاقته تساوي طاقة التأين فإنه:", opts: ["ينتقل لمستوى أعلى", "يتحرر من الذرة", "يسقط في النواة", "لا يتأثر"], a: "يتحرر من الذرة" },
+    { q: "الضوء الأبيض عند تحليله يعطي طيفاً:", opts: ["خطياً", "مستمراً", "مظلماً", "امتصاصياً"], a: "مستمراً" },
+    { q: "شغل التأين هو الشغل اللازم لنقل الإلكترون من المستوى الأرضي إلى:", opts: ["المستوى الثاني", "المستوى الثالث", "خارج الذرة (ن=∞)", "النواة"], a: "خارج الذرة (ن=∞)" },
+    { q: "نموذج بور نجح بشكل كبير في تفسير طيف ذرة:", opts: ["الهيليوم", "الهيدروجين", "اليورانيوم", "الصوديوم"], a: "الهيدروجين" },
+    { q: "العلاقة بين طاقة المستوى (ط) ورقم المستوى (ن) هي علاقة:", opts: ["طردية مع ن", "عكسية مع ن²", "طردية مع ن²", "ثابتة"], a: "عكسية مع ن²" },
+    { q: "الإلكترون فولت هو مقدار الشغل لنقل إلكترون بين نقطتين فرق جهدهما:", opts: ["10 فولت", "1 فولت", "13.6 فولت", "صفر فولت"], a: "1 فولت" },
+    { q: "سرعة الإلكترون في المدار الأول تكون ....... سرعتة في المدار الثاني:", opts: ["أقل من", "أكبر من", "مساوية لـ", "نصف"], a: "أكبر من" },
+    { q: "طاقة الفوتون هي طاقة:", opts: ["مستمرة", "مكممة (محددة)", "سالبة دائماً", "منعدمة"], a: "مكممة (محددة)" },
+    { q: "تنشأ قوى الطرد المركزية بسبب:", opts: ["شحنة الإلكترون", "دوران الإلكترون", "كتلة النواة", "ثابت بلانك"], a: "دوران الإلكترون" },
+    { q: "الإشعاع الناتج عن ذرة مثارة يكون على شكل:", opts: ["موجات صوتية", "موجات كهرومغناطيسية", "جسيمات ألفا", "حرارة فقط"], a: "موجات كهرومغناطيسية" },
+    { q: "الرقم ن في قانون بور يسمى:", opts: ["العدد الذري", "عدد الكتلة", "عدد الكم الرئيسي", "ثابت المدار"], a: "عدد الكم الرئيسي" },
+    { q: "إذا انتقل الإلكترون من ن=3 إلى ن=2، الفوتون الناتج يقع في نطاق:", opts: ["الضوء المرئي", "الأشعة تحت الحمراء", "الأشعة فوق البنفسجية", "أشعة جاما"], a: "الضوء المرئي" },
+    { q: "الطاقة الكلية للإلكترون تساوي:", opts: ["طاقة الحركة + طاقة الوضع", "طاقة الحركة فقط", "طاقة الوضع فقط", "الكتلة × مربع السرعة"], a: "طاقة الحركة + طاقة الوضع" }
+];
+
+// دالة الخلط العشوائي
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function showContent(id, btn) {
+            document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active-card');
+            btn.classList.add('active');
+            if(id === 'quiz-div' && !quizLoaded) { prepareAndLoadQuiz(); startTimer(); quizLoaded = true; }
+        }
+
+        function prepareAndLoadQuiz() {
+            // خلط الأسئلة أولاً
+            shuffledQuizData = shuffle([...originalQuizData]);
+            
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = shuffledQuizData.map((item, i) => {
+                // خلط الخيارات لكل سؤال بشكل مستقل
+                const shuffledOptions = shuffle([...item.opts]);
+                return `
+                    <div class="question-item" id="q-item-${i}">
+                        <p><b>${i+1}. ${item.q}</b></p>
+                        ${shuffledOptions.map((opt, oi) => `
+                            <label style="display:block; margin:5px 0; cursor:pointer;">
+                                <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                            </label>`).join('')}
+                        <div id="feedback-${i}" class="feedback-text"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startTimer() {
+            timerInstance = setInterval(() => {
+                let min = Math.floor(timeLeft / 60);
+                let sec = timeLeft % 60;
+                document.getElementById('timer-display').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
+                if (timeLeft <= 0) { clearInterval(timerInstance); calculateScore(false); }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function calculateScore(manual) {
+            if(manual) clearInterval(timerInstance);
+            let score = 0;
+
+            shuffledQuizData.forEach((item, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const questionDiv = document.getElementById(`q-item-${i}`);
+                const feedbackDiv = document.getElementById(`feedback-${i}`);
+                
+                let isCorrect = selected && selected.value === item.a;
+                
+                if (isCorrect) {
+                    score++;
+                    questionDiv.classList.add('correct-answer');
+                } else {
+                    questionDiv.classList.add('wrong-answer');
+                    feedbackDiv.style.display = "block";
+                    feedbackDiv.style.color = "#c0392b";
+                    feedbackDiv.innerHTML = `❌ الإجابة الصحيحة هي: ${item.a}`;
+                }
+            });
+
+            const res = document.getElementById('result-box');
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} 30 <br> <small>استعن بالله وبالتوفيق دائما</small>`;
+            res.style.background = score >= 10 ? "#d4edda" : "#f8d7da";
+            res.style.color = score >= 10 ? "#155724" : "#721c24";
+            
+            document.getElementById('submit-quiz-btn').disabled = true;
+            document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
+            document.querySelectorAll('input').forEach(i => i.disabled = true);
+        }
+    </script> 
+		<div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999; direction: rtl;">
+ by:   <b>Ammar Barakat  </b>
+    </div>
+</body>
+</html>
