@@ -1,83 +1,133 @@
-
-
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فضاء للتعلم</title>
+    <title>الحركة التوافقية</title>
     <style>
-        /* التنسيقات الأصلية مع تحسينات بسيطة */
+        .protection-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+ 
+  .shield {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0); /* شفاف تماماً */
+  }
+        /* 1. التنسيقات العامة */
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
             margin: 0; display: flex; height: 100vh; 
             background-color: #f0f4f8; overflow: hidden;
+            direction: rtl;
         }
+
+        /* 2. القائمة الجانبية */
         .sidebar {
             width: 300px; background-color: #1e3a5f; color: white;
             display: flex; flex-direction: column; padding: 20px;
             box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+            transition: 0.4s ease; z-index: 2000; 
         }
         .sidebar h2 { 
             text-align: center; font-size: 1.3em; color: #90cdf4; 
-            border-bottom: 1px solid #2c5282; padding-bottom: 15px;
+            border-bottom: 1px solid #2c5282; padding-bottom: 15px; 
         }
-        .menu-btn {
-            background: #2a4365; color: #ebf8ff; border: none;
-            padding: 14px; margin-bottom: 10px; border-radius: 10px;
-            cursor: pointer; text-align: right; font-size: 1em;
-            transition: 0.3s; display: flex; align-items: center; gap: 10px;
+
+        /* 3. شريط الموبايل */
+        .mobile-header { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
+            background: #1e3a5f; color: white; align-items: center; 
+            justify-content: center; z-index: 1000; 
+            font-weight: 900; font-size: 1.4em;
+        }
+        .mobile-nav-toggle { 
+            display: none; position: fixed; top: 15px; right: 15px; 
+            z-index: 1100; cursor: pointer; background: transparent; 
+            color: white; border: none; font-size: 26px; 
+        }
+        .overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; 
+            height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; 
+        }
+
+        /* 4. أزرار القائمة */
+        .menu-btn { 
+            background: #2a4365; color: #ebf8ff; border: none; 
+            padding: 14px; margin-bottom: 10px; border-radius: 10px; 
+            cursor: pointer; text-align: right; font-size: 1em; 
+            transition: 0.3s; width: 100%;
         }
         .menu-btn:hover { background: #3182ce; }
         .menu-btn.active { background: #4299e1; font-weight: bold; }
         .home-btn { 
             margin-top: auto; padding: 12px; 
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            color: white; text-decoration: none; border-radius: 10px; text-align: center;
+            background: linear-gradient(135deg, #48bb78, #38a169); 
+            color: white; text-decoration: none; border-radius: 10px; text-align: center; 
         }
+
+        /* 5. منطقة المحتوى */
         .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
-        .display-card { width: 100%; height: 100%; background: white; border-radius: 15px; display: none; overflow-y: auto; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .active-card { display: block !important; }
-        #quiz-timer {
-            background: #e74c3c; color: white; padding: 10px 20px;
-            border-radius: 8px; font-weight: bold; position: sticky; top: 0; z-index: 10;
-            display: inline-block; margin-bottom: 20px;
+        .display-card { 
+            width: 100%; height: 100%; background: white; border-radius: 15px; 
+            display: none; overflow-y: auto; padding: 20px; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
         }
-        .question-item { background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #4299e1; }
+        .active-card { display: flex; flex-direction: column; }
+        iframe { width: 100%; height: 100%; border: none; border-radius: 10px; }
+
+        /* 6. الاختبار والمؤقت */
+        #quiz-timer { 
+            background: #e74c3c; color: white; padding: 10px 20px; 
+            border-radius: 8px; font-weight: bold; position: sticky; 
+            top: 0; z-index: 10; display: inline-block; margin-bottom: 20px; 
+        }
+        .question-item { 
+            background: #f7fafc; padding: 15px; border-radius: 10px; 
+            margin-bottom: 15px; border-right: 5px solid #4299e1; 
+        }
         .correct-answer { background-color: #d4edda !important; border-right: 5px solid #28a745 !important; }
         .wrong-answer { background-color: #f8d7da !important; border-right: 5px solid #dc3545 !important; }
-        .feedback-text { font-weight: bold; margin-top: 10px; display: none; }
-        iframe { width: 100%; height: 600px; border: none; border-radius: 10px; }
+        .feedback-text { font-weight: bold; margin-top: 10px; display: none; color: #c0392b; }
+
         @media (max-width: 768px) {
-            body { flex-direction: column; overflow-y: auto; height: auto; }
-            .sidebar { width: 100%; position: relative; }
-            .main-content { height: 70vh; }
+            body { height: auto; overflow-y: auto; }
+            .sidebar { position: fixed; right: -310px; top: 0; height: 100vh; width: 280px; }
+            .sidebar.open { right: 0; }
+            .mobile-header { display: flex; }
+            .mobile-nav-toggle { display: block; }
+            .overlay.active { display: block; }
+            .main-content { padding: 75px 8px 10px 8px; height: calc(100vh - 10px); }
         }
     </style>
 </head>
 <body>
+    <div class="mobile-header">space4learn</div>
+    <button class="mobile-nav-toggle" onclick="toggleSidebar()">☰</button>
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
-    <div class="sidebar">
-        <h2>⏳ الحركة التوافقية البسيطة</h2>
+    <div class="sidebar" id="sidebar">
+        <h2>⏳ الحركة التوافقية</h2>
         <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
         <button class="menu-btn" onclick="showContent('video-div', this)">🎬 تجربة اليوتيوب</button>
         <button class="menu-btn" onclick="showContent('lab-div', this)">🧪 المختبر الافتراضي</button>
-        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 اختبار ال40 سؤال</button>
+        <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 الاختبار الذكي</button>
         <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
     </div>
-
-    <div class="main-content">
+ <div class="main-content">
         <div id="pdf-div" class="display-card active-card">
-            <div style="position: relative; width: 100%; padding-top: 100%; border-radius: 8px; overflow: hidden;">
-                <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;"
-                    src="https://www.canva.com/design/DAG-DPUetZA/fpQfImAkEyhY67BU6xrgYQ/view?embed" allowfullscreen>
-                </iframe>
-            </div>
+            <iframe src="https://www.canva.com/design/DAG-DPUetZA/fpQfImAkEyhY67BU6xrgYQ/view?embed" allowfullscreen></iframe>
+            <p style="text-align: center; margin-top: 10px; font-weight: bold; color: #1e3a5f;"></p>
         </div>
-
-        <div id="video-div" class="display-card">
+         <div id="video-div" class="display-card">
             <iframe src="https://www.youtube.com/embed/w2s2fZr8sqQ" allowfullscreen></iframe>
         </div>
 
@@ -87,99 +137,108 @@
 
         <div id="quiz-div" class="display-card">
             <div id="quiz-timer">⏱️ الوقت المتبقي: <span id="timer-display">10:00</span></div>
-            <h3>📝 اختبار الحركة التوا</h3>
-            <div id="quiz-container"></div>
-            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال ومعرفة الأخطاء</button>
-            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px;"></div>
+            <h3>📝اختبار الحركة التوافقية - الزمن 10 دقائق</h3>
+            <div id="quiz-container">جاري تحميل الأسئلة...</div>
+            <button id="submit-quiz-btn" onclick="calculateScore(true)" style="width:100%; padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 20px;">إرسال ومعرفة الأخطاء</button>
+            <div id="result-box" style="margin-top:20px; text-align:center; font-size:1.4em; font-weight:bold; border-radius: 10px; padding: 15px; display: none;"></div>
         </div>
     </div>
 
-    <script>
+    <script> 
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+        document.onkeydown = function(e) {
+        if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 73)) {
+            return false;
+        }
+    };
+        // 1. إعداد YouTube API للتحكم في التشغيل والتوقف
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'w2s2fZr8sqQ', 
+                playerVars: { 'rel': 0, 'showinfo': 0 }
+            });
+        }
+
         let timerInstance;
         let timeLeft = 600; 
         let quizLoaded = false;
         let shuffledQuizData = [];
 
-        // الأسئلة بتنسيق q, o, a لتعمل مع الكود
-        const originalQuizData = [
- { q: "تسمى الحركة الاهتزازية التي تتبع دالة جيبية بـ:", o: ["حركة دورانية", "حركة توافقية بسيطة", "حركة عشوائية", "حركة منكسرة"], a: "حركة توافقية بسيطة" },
-    { q: "في الصور المرفقة، تحسب الإزاحة (س) من العلاقة:", o: ["س = أ جتا هـ", "س = أ جا هـ", "س = أ ظا هـ", "س = أ / جا هـ"], a: "س = أ جا هـ" },
-    { q: "يمثل الرمز (أ) في القوانين:", o: ["السرعة", "الزمن الدوري", "الاتساع", "العجلة"], a: "الاتساع" },
-    { q: "يسمى بُعد النقطة (ب) عن موضع اتزانها بـ:", o: ["التردد", "الإزاحة (س)", "الاتساع", "الزمن"], a: "الإزاحة (س)" },
-    { q: "يرمز للسرعة الزاوية للجسم الذي يتحرك على الدائرة بالرمز:", o: ["ω (أوميقا)", "ع", "جـ", "ن"], a: "ω (أوميقا)" },
-    { q: "عندما تكون الزاوية (هـ) مساوية للصفر، فإن الإزاحة (س) تساوي:", o: ["الاتساع (أ)", "صفر", "نهاية عظمى", "-أ"], a: "صفر" },
-    { q: "تصل النقطة (ب) إلى أقصى إزاحة (الاتساع) عندما تكون هـ تساوي:", o: ["صفر", "90 درجة", "180 درجة", "360 درجة"], a: "90 درجة" },
-    { q: "السرعة المماسية للجسم المتحرك على الدائرة (ع) تساوي:", o: ["ω / أ", "ω × أ", "أ / ω", "ω² أ"], a: "ω × أ" },
-    { q: "بما أن الإزاحة تتبع دالة الجيب، فإن سرعة النقطة (عَ) تتبع دالة:", o: ["الجيب", "جيب التمام (جتا)", "الظل", "القاطع"], a: "جيب التمام (جتا)" },
-    { q: "قانون سرعة النقطة (ب) هو:", o: ["عَ = ع جا هـ", "عَ = ع جتا هـ", "عَ = - ع جا هـ", "عَ = أ جا هـ"], a: "عَ = ع جتا هـ" },
-    { q: "تكون سرعة النقطة (ب) في نهاية عظمى (أقصى قيمة) عند مرورها بـ:", o: ["نقطة الاتساع", "مركز الدائرة (موضع الاتزان)", "الزاوية 90", "الزاوية 270"], a: "مركز الدائرة (موضع الاتزان)" },
-    { q: "تنعدم سرعة النقطة (ب) تماماً عندما تصل إلى:", o: ["موضع الاتزان", "نقطة الاتساع (أ)", "الزاوية صفر", "منتصف المسافة"], a: "نقطة الاتساع (أ)" },
-    { q: "العجلة المركزية للجسم يرمز لها بالرمز (جـ) وتساوي:", o: ["ω أ", "ω² أ", "ω / أ", "أ / ω²"], a: "ω² أ" },
-    { q: "تحسب عجلة النقطة المهتزة (جـَ) من العلاقة:", o: ["جـَ = جـ جا هـ", "جـَ = - جـ جا هـ", "جـَ = جـ جتا هـ", "جـَ = - جـ جتا هـ"], a: "جـَ = - جـ جا هـ" },
-    { q: "العلاقة التي تربط العجلة (جـَ) بالإزاحة (س) هي:", o: ["جـَ = ω² س", "جـَ = - ω² س", "جـَ = ω س", "جـَ = - ω س"], a: "جـَ = - ω² س" },
-    { q: "تكون العجلة (جـَ) مساوية للصفر عندما تكون النقطة (ب) عند:", o: ["أقصى إزاحة", "موضع الاتزان (المركز م)", "الزاوية 90", "الزاوية 270"], a: "موضع الاتزان (المركز م)" },
-    { q: "تكون العجلة في نهاية عظمى عندما تكون الإزاحة (س) تساوي:", o: ["صفر", "الاتساع (أ)", "نصف الاتساع", "ω أ"], a: "الاتساع (أ)" },
-    { q: "الإشارة السالبة في قانون العجلة تعني أن اتجاهها دائماً يكون:", o: ["في اتجاه الإزاحة", "نحو موضع الاتزان", "نحو الخارج", "للأعلى"], a: "نحو موضع الاتزان" },
-    { q: "الزمن اللازم لعمل اهتزازة كاملة يسمى:", o: ["التردد", "الزمن الدوري (ز)", "السرعة الزاوية", "زمن الطور"], a: "الزمن الدوري (ز)" },
-    { q: "عدد الاهتزازات الكاملة في الثانية الواحدة يسمى:", o: ["الزمن الدوري", "التردد (د)", "الاتساع", "الإزاحة"], a: "التردد (د)" },
-    { q: "العلاقة بين التردد (د) والزمن الدوري (ز) هي:", o: ["د = ز", "د = 1 / ز", "د × ز = 2 π", "د = ز²"], a: "د = 1 / ز" },
-    { q: "قيمة الإزاحة (س) عند الزاوية هـ = 180 درجة هي:", o: ["أ", "صفر", "-أ", "2أ"], a: "صفر" },
-    { q: "قيمة الإزاحة (س) عند الزاوية هـ = 270 درجة هي:", o: ["أ", "-أ", "صفر", "0.5أ"], a: "-أ" },
-    { q: "زاوية الطور (هـ) تحسب من العلاقة:", o: ["هـ = ω / ن", "هـ = ω × ن", "هـ = ن / ω", "هـ = ω + ن"], a: "هـ = ω × ن" },
-    { q: "وحدة قياس السرعة الزاوية (ω) هي:", o: ["درجة/ثانية", "متر/ثانية", "راديان/ثانية", "هيرتز"], a: "راديان/ثانية" },
-    { q: "في الحركة التوافقية، تتناسب العجلة طردياً مع:", o: ["السرعة", "الإزاحة", "مربع الزمن", "الزاوية فقط"], a: "الإزاحة" },
-    { q: "أقصى قيمة لسرعة النقطة (ب) تساوي:", o: ["ω أ", "ω² أ", "أ / ω", "صفر"], a: "ω أ" },
-    { q: "أقصى قيمة لعجلة النقطة (ب) تساوي:", o: ["ω أ", "ω² أ", "أ / ω²", "ω²"], a: "ω² أ" },
-    { q: "عندما يكون الجسم عند الزاوية 90، تكون الإزاحة:", o: ["صفر", "الاتساع أ", "-أ", "نصف أ"], a: "الاتساع أ" },
-    { q: "عندما يكون الجسم عند الزاوية 270، تكون العجلة:", o: ["صفر", "أقصى قيمة موجبة", "أقصى قيمة سالبة", "نصف القيمة"], a: "أقصى قيمة موجبة" },
-    { q: "الدائرة التي تصف حركة الجسم تسمى دائرة:", o: ["الإسناد", "الوحدة", "التوازن", "القطر"], a: "الإسناد" },
-    { q: "المسافة الكلية التي تقطعها النقطة (ب) خلال زمن دوري كامل هي:", o: ["أ", "2أ", "4أ", "صفر"], a: "4أ" },
-    { q: "إذا زادت السرعة الزاوية، فإن التردد:", o: ["يزداد", "يقل", "يبقى ثابتاً", "ينعدم"], a: "يزداد" },
-    { q: "العلاقة بين ω والتردد (د) هي:", o: ["ω = 2 π د", "ω = د / 2 π", "ω = π د", "ω = 2 π / د"], a: "ω = د / 2 π" },
-    { q: "تصل السرعة (عَ) إلى الصفر عند الزوايا:", o: ["0، 180", "90، 270", "0، 360", "45، 135"], a: "90، 270" },
-    { q: "يكون منحنى الإزاحة والزمن في هذه الحالة منحنى:", o: ["جيب التمام", "الجيب", "خطياً", "دائرياً"], a: "الجيب" },
-    { q: "عندما تكون الإزاحة (س) موجبة، تكون العجلة (جـَ):", o: ["موجبة", "سالبة", "صفر", "ثابتة"], a: "سالبة" },
-    { q: "تمثل النقطة (ب) في الرسم الاهتزازي:", o: ["ظل الجسم", "مركز الجسم", "سرعة الجسم", "عجلة الجسم"], a: "ظل الجسم" },
-    { q: "تعتمد سرعة وعجلة النقطة (ب) على زاوية:", o: ["السقوط", "الطور (هـ)", "الانكسار", "الميل"], a: "الطور (هـ)" },
-    { q: "أي الكميات التالية تكون قيمة عظمى في مركز الدائرة؟", o: ["الإزاحة", "العجلة", "السرعة", "القوة"], a: "السرعة" }
-];
+        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
+        // دالة التبديل المحسنة للتحكم في الفيديو
         function showContent(id, btn) {
+            // إيقاف واستكمال الفيديو حسب الصفحة
+            if (player && typeof player.pauseVideo === 'function') {
+                if (id === 'video-div') {
+                    player.playVideo();
+                } else {
+                    player.pauseVideo();
+                }
+            }
+
             document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            
             document.getElementById(id).classList.add('active-card');
             btn.classList.add('active');
-            if(id === 'quiz-div' && !quizLoaded) { 
-                prepareAndLoadQuiz(); 
-                startTimer(); 
+
+            if (id === 'quiz-div' && !quizLoaded) { 
+                fetchAndLoadQuiz(); 
                 quizLoaded = true; 
+            }
+
+            if (window.innerWidth <= 768) toggleSidebar();
+        }
+
+        async function fetchAndLoadQuiz() {
+            try {
+                const response = await fetch('questions.json');
+                if (!response.ok) throw new Error("فشل التحميل");
+                const allData = await response.json();
+                
+                const lightQuestions = allData.filter(item => item.topic === "SHM");
+
+                if (lightQuestions.length === 0) {
+                    document.getElementById('quiz-container').innerHTML = "<p>لا توجد أسئلة متوفرة حالياً.</p>";
+                    return;
+                }
+
+                shuffledQuizData = shuffle(lightQuestions.map(item => ({
+                    q: item.question,
+                    options: shuffle([item.option1, item.option2, item.option3, item.option4]),
+                    correct: item.answer
+                })));
+
+                renderQuiz();
+                startTimer();
+            } catch (error) {
+                document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، تعذر تحميل الأسئلة.</p>";
             }
         }
 
-        function prepareAndLoadQuiz() {
-            shuffledQuizData = shuffle([...originalQuizData]);
+        function renderQuiz() {
             const container = document.getElementById('quiz-container');
-            container.innerHTML = shuffledQuizData.map((item, i) => {
-                const shuffledOptions = shuffle([...item.o]); // تعديل ليتناسب مع مفتاح o
-                return `
-                    <div class="question-item" id="q-item-${i}">
-                        <p><b>${i+1}. ${item.q}</b></p>
-                        ${shuffledOptions.map(opt => `
-                            <label style="display:block; margin:5px 0; cursor:pointer;">
-                                <input type="radio" name="q${i}" value="${opt}"> ${opt}
-                            </label>`).join('')}
-                        <div id="feedback-${i}" class="feedback-text"></div>
-                    </div>
-                `;
-            }).join('');
+            container.innerHTML = shuffledQuizData.map((item, i) => `
+                <div class="question-item" id="q-item-${i}">
+                    <p><b>${i+1}. ${item.q}</b></p>
+                    ${item.options.map(opt => `
+                        <label style="display:block; margin:8px 0; cursor:pointer;">
+                            <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                    <div id="feedback-${i}" class="feedback-text"></div>
+                </div>
+            `).join('');
         }
 
         function startTimer() {
@@ -187,45 +246,47 @@
                 let min = Math.floor(timeLeft / 60);
                 let sec = timeLeft % 60;
                 document.getElementById('timer-display').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
-                if (timeLeft <= 0) { 
-                    clearInterval(timerInstance); 
-                    calculateScore(false); 
-                }
-                timeLeft--;
+                if (timeLeft-- <= 0) { clearInterval(timerInstance); calculateScore(false); }
             }, 1000);
         }
 
         function calculateScore(manual) {
             if(manual) clearInterval(timerInstance);
             let score = 0;
-
             shuffledQuizData.forEach((item, i) => {
-                const selected = document.querySelector(`input[name="q${i}"]:checked`);
-                const questionDiv = document.getElementById(`q-item-${i}`);
-                const feedbackDiv = document.getElementById(`feedback-${i}`);
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                const qDiv = document.getElementById(`q-item-${i}`);
+                const fDiv = document.getElementById(`feedback-${i}`);
                 
-                let isCorrect = selected && selected.value === item.a; // تعديل ليتناسب مع مفتاح a
-                
-                if (isCorrect) {
-                    score++;
-                    questionDiv.classList.add('correct-answer');
-                } else {
-                    questionDiv.classList.add('wrong-answer');
-                    feedbackDiv.style.display = "block";
-                    feedbackDiv.style.color = "#c0392b";
-                    feedbackDiv.innerHTML = `❌ الإجابة الصحيحة هي: ${item.a}`;
+                if (sel && sel.value === item.correct) { 
+                    score++; 
+                    qDiv.classList.add('correct-answer'); 
+                } else { 
+                    qDiv.classList.add('wrong-answer'); 
+                    fDiv.style.display = "block"; 
+                    fDiv.innerHTML = `❌ الإجابة الصحيحة: ${item.correct}`; 
                 }
             });
 
             const res = document.getElementById('result-box');
-            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من ${shuffledQuizData.length} <br> <small>بالتوفيق دائماً</small>`;
-            res.style.background = score >= (shuffledQuizData.length/2) ? "#d4edda" : "#f8d7da";
-            res.style.color = score >= (shuffledQuizData.length/2) ? "#155724" : "#721c24";
-            
+            res.style.display = "block";
+            res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من ${shuffledQuizData.length}`;
+            res.style.background = score >= (shuffledQuizData.length / 2) ? "#d4edda" : "#f8d7da";
             document.getElementById('submit-quiz-btn').disabled = true;
             document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
-            document.querySelectorAll('input').forEach(input => input.disabled = true);
+            res.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
         }
     </script>
+
+    <div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999;">
+        by: <b>Ammar Barakat</b>
+    </div>
 </body>
 </html>
+
+
