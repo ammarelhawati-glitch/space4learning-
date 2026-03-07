@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المغناطيسية</title>
+    <title>المغناطيسية - space4learn</title>
     <style>
-      
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
@@ -14,7 +13,7 @@
             direction: rtl;
         }
 
-      
+        /*Sidebar Styling*/
         .sidebar {
             width: 300px; background-color: #1e3a5f; color: white;
             display: flex; flex-direction: column; padding: 20px;
@@ -26,7 +25,7 @@
             border-bottom: 1px solid #2c5282; padding-bottom: 15px; 
         }
 
-       
+        /* Mobile Header */
         .mobile-header { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
             background: #1e3a5f; color: white; align-items: center; 
@@ -43,7 +42,6 @@
             height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; 
         }
 
-      
         .menu-btn { 
             background: #2a4365; color: #ebf8ff; border: none; 
             padding: 14px; margin-bottom: 10px; border-radius: 10px; 
@@ -58,7 +56,6 @@
             color: white; text-decoration: none; border-radius: 10px; text-align: center; 
         }
 
-       
         .main-content { flex: 1; padding: 20px; display: flex; overflow: hidden; position: relative; }
         .display-card { 
             width: 100%; height: 100%; background: white; border-radius: 15px; 
@@ -66,9 +63,12 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
         }
         .active-card { display: flex; flex-direction: column; }
+        
+        /* Video Container */
+        .player-container { width: 100%; height: 100%; min-height: 350px; border-radius: 10px; overflow: hidden; }
         iframe { width: 100%; height: 100%; border: none; border-radius: 10px; }
 
-        /* 6. الاختبار والمؤقت */
+        /* Quiz Styling */
         #quiz-timer { 
             background: #e74c3c; color: white; padding: 10px 20px; 
             border-radius: 8px; font-weight: bold; position: sticky; 
@@ -101,30 +101,28 @@
     <div class="sidebar" id="sidebar">
         <h2>🧲 المغناطيسية</h2>
         <button class="menu-btn active" onclick="showContent('pdf-div', this)">📄 شرح الدرس</button>
-         <button class="menu-btn" onclick="showContent('video-div', this)">🎬 الخطوط المغناطيسية -معمل </button>
+        <button class="menu-btn" onclick="showContent('video-div', this)">🎬 الخطوط المغناطيسية -معمل </button>
         <button class="menu-btn" onclick="showContent('lab-div', this)">🎬  الأرض المغناطيس الضخم -معمل</button>
-		<button class="menu-btn" onclick="showContent('lab1-div', this)">🧪  المغناطيس -الخطوط المغناطيسية</button>
+        <button class="menu-btn" onclick="showContent('lab1-div', this)">🧪  المغناطيس -الخطوط المغناطيسية</button>
         <button class="menu-btn" onclick="showContent('quiz-div', this)">📝 الاختبار الذكي</button>
         <a href="index.html" class="home-btn">🏠 العودة للرئيسية</a>
     </div>
 
     <div class="main-content">
         <div id="pdf-div" class="display-card active-card">
-            <div style="flex: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                <iframe src="https://www.canva.com/design/DAG9P0pOGjM/bBjv2yVvOdzuuvEyif4PeQ/view?embed" allowfullscreen></iframe>
-            </div>
-          
+            <iframe src="https://www.canva.com/design/DAG9P0pOGjM/bBjv2yVvOdzuuvEyif4PeQ/view?embed" allowfullscreen></iframe>
         </div>
 
         <div id="video-div" class="display-card">
-		<iframe width="843" height="258" src="https://www.youtube.com/embed/fajjY9DH4Bo" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <div id="player1" class="player-container"></div>
         </div>
 
         <div id="lab-div" class="display-card">
-            <iframe src="https://www.youtube.com/embed/uwK8KW_WtHs"></iframe>
-            <p style="text-align: center; margin-top: 5px; font-size: 0.9em; color: #666;">* ملاحظة: قد تتطلب بعض المحاكيات متصفحاً يدعم التقنيات الحديثة.</p>
+            <div id="player2" class="player-container"></div>
+            <p style="text-align: center; margin-top: 5px; font-size: 0.9em; color: #666;">* معمل: الأرض مغناطيس ضخم</p>
         </div>
-		 <div id="lab1-div" class="display-card">
+
+        <div id="lab1-div" class="display-card">
             <iframe src="https://phet.colorado.edu/sims/html/magnet-and-compass/latest/magnet-and-compass_all.html"></iframe>
         </div>
 
@@ -138,38 +136,33 @@
     </div>
 
     <script>
-        // 1. إعداد YouTube API للتحكم الذكي
+        // --- إعدادات YouTube API لفيديوهات متعددة ---
+        var player1, player2;
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        var player;
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
-                videoId: 'w2s2fZr8sqQ', 
-                playerVars: { 'rel': 0, 'showinfo': 0 }
+            player1 = new YT.Player('player1', {
+                videoId: 'fajjY9DH4Bo',
+                playerVars: { 'playsinline': 1, 'rel': 0, 'modestbranding': 1 }
+            });
+            player2 = new YT.Player('player2', {
+                videoId: 'uwK8KW_WtHs',
+                playerVars: { 'playsinline': 1, 'rel': 0, 'modestbranding': 1 }
             });
         }
 
-        let timerInstance;
-        let timeLeft = 600; 
-        let quizLoaded = false;
-        let shuffledQuizData = [];
-
-        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
-
-        // دالة التبديل للتحكم في الفيديو وتنسيق البطاقات
+        // --- نظام التحكم في المحتوى ---
         function showContent(id, btn) {
-            if (player && typeof player.pauseVideo === 'function') {
-                if (id === 'video-div') {
-                    player.playVideo();
-                } else {
-                    player.pauseVideo();
-                }
-            }
+            // إيقاف الفيديوهات عند مغادرة صفحتها
+            if (player1 && player1.pauseVideo) player1.pauseVideo();
+            if (player2 && player2.pauseVideo) player2.pauseVideo();
+
+            // تشغيل الفيديو المختار فقط
+            if (id === 'video-div' && player1 && player1.playVideo) player1.playVideo();
+            if (id === 'lab-div' && player2 && player2.playVideo) player2.playVideo();
 
             document.querySelectorAll('.display-card').forEach(c => c.classList.remove('active-card'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
@@ -185,19 +178,19 @@
             if (window.innerWidth <= 768) toggleSidebar();
         }
 
+        // --- نظام الاختبار (Quiz System) ---
+        let timerInstance;
+        let timeLeft = 600; 
+        let quizLoaded = false;
+        let shuffledQuizData = [];
+
+        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+
         async function fetchAndLoadQuiz() {
             try {
                 const response = await fetch('questions.json');
-                if (!response.ok) throw new Error("فشل التحميل");
                 const allData = await response.json();
-                
-              
                 const filteredQuestions = allData.filter(item => item.topic === "magna");
-
-                if (filteredQuestions.length === 0) {
-                    document.getElementById('quiz-container').innerHTML = "<p>لا توجد أسئلة متوفرة حالياً.</p>";
-                    return;
-                }
 
                 shuffledQuizData = shuffle(filteredQuestions.map(item => ({
                     q: item.question,
@@ -208,7 +201,7 @@
                 renderQuiz();
                 startTimer();
             } catch (error) {
-                document.getElementById('quiz-container').innerHTML = "<p style='color:red;'>عذراً، تعذر تحميل الأسئلة.</p>";
+                document.getElementById('quiz-container').innerHTML = "<p>تعذر تحميل الأسئلة. تأكد من وجود ملف questions.json</p>";
             }
         }
 
@@ -253,14 +246,11 @@
                     fDiv.innerHTML = `❌ الإجابة الصحيحة: ${item.correct}`; 
                 }
             });
-
             const res = document.getElementById('result-box');
             res.style.display = "block";
             res.innerHTML = `انتهى الاختبار! نتيجتك: ${score} من ${shuffledQuizData.length}`;
             res.style.background = score >= (shuffledQuizData.length / 2) ? "#d4edda" : "#f8d7da";
             document.getElementById('submit-quiz-btn').disabled = true;
-            document.getElementById('submit-quiz-btn').style.background = "#95a5a6";
-            res.scrollIntoView({ behavior: 'smooth' });
         }
 
         function toggleSidebar() {
@@ -268,10 +258,5 @@
             document.getElementById('overlay').classList.toggle('active');
         }
     </script>
-
-    <div style="position: fixed; bottom: 15px; left: 15px; background: rgba(30, 58, 95, 0.8); color: white; padding: 6px 15px; border-radius: 50px; font-size: 13px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); z-index: 9999;">
-        by: <b>Ammar Barakat</b>
-    </div>
 </body>
 </html>
-
