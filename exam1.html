@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>اختبار الفيزياء - ربط القوائم</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #3498db; --success: #27ae60; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; direction: rtl; }
+        .container { max-width: 950px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
+        
+        /* بنك الإجابات (قائمة ب) */
+        .bank-section { margin-bottom: 30px; border: 2px solid var(--accent); border-radius: 10px; overflow: hidden; }
+        .bank-header { background: var(--accent); color: white; padding: 10px; text-align: center; font-weight: bold; }
+        .answer-bank { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px; background: #fff; min-height: 60px; }
+        
+        .drag-item { background: #e1effe; color: #1e429f; border: 1px solid #a4cafe; padding: 8px 15px; border-radius: 8px; cursor: grab; font-weight: 600; font-size: 0.95em; }
+        .drag-item:active { cursor: grabbing; background: var(--accent); color: white; }
+
+        /* جدول الأسئلة (قائمة أ) */
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; color: var(--primary); }
+        td { padding: 15px; border: 1px solid #e2e8f0; vertical-align: middle; }
+        .q-text { width: 60%; line-height: 1.6; font-weight: 500; }
+        
+        .drop-zone { width: 100%; min-height: 45px; border: 2px dashed #cbd5e0; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #fdfdfd; }
+        .drop-zone.filled { border-style: solid; border-color: var(--accent); background: white; }
+
+        .controls { margin-top: 30px; text-align: center; }
+        .btn { padding: 15px 50px; font-size: 1.2em; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-check { background: var(--success); color: white; }
+        .btn-check:hover { background: #219150; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 style="text-align:center; color:var(--primary)">🧪 مختبر الفيزياء التفاعلي</h1>
+    
+    <div class="bank-section">
+        <div class="bank-header">قائمة (ب): بنك الإجابات - اسحب من هنا</div>
+        <div class="answer-bank" id="answer-bank" ondrop="dropToBank(event)" ondragover="allowDrop(event)"></div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>قائمة (أ): السؤال</th>
+                <th>ضع الإجابة هنا</th>
+            </tr>
+        </thead>
+        <tbody id="quiz-rows"></tbody>
+    </table>
+
+    <div class="controls">
+        <button class="btn btn-check" onclick="checkAll()">تصحيح الاختبار</button>
+        <h2 id="final-score" style="margin-top:20px; color:var(--primary)"></h2>
+    </div>
+</div>
+
+<script>
+    let currentQuestions = [];
+
+    // جلب الأسئلة من ملف JSON
+    async function loadQuestions() {
+        try {
+            const response = await fetch('questions.json');
+            const data = await response.json();
+            
+            // نختار أول 10 أسئلة كمثال، أو يمكنك تصفيتها حسب الموضوع (topic)
+            currentQuestions = data.slice(0, 10); 
+            renderQuiz();
+        } catch (error) {
+            alert("خطأ: لم يتم العثور على ملف questions.json أو تنسيقه غير صحيح");
+        }
+    }
+
+    function renderQuiz() {
+        const bank = document.getElementById('answer-bank');
+        const rows = document.getElementById('quiz-rows');
+
+        // خلط الإجابات
+        const shuffledAns = currentQuestions.map(q => q.answer).sort(() => Math.random() - 0.5);
+        
+        bank.innerHTML = shuffledAns.map((a, i) => `
+            <div class="drag-item" draggable="true" ondragstart="drag(event)" id="ans-${i}" data-val="${a}">${a}</div>
+        `).join('');
+
+        rows.innerHTML = currentQuestions.map((q, i) => `
+            <tr>
+                <td class="q-text">${q.question}</td>
+                <td><div class="drop-zone" id="target-${i}" ondrop="dropToTarget(event)" ondragover="allowDrop(event)"></div></td>
+            </tr>
+        `).join('');
+    }
+
+    // منطق السحب
+    function allowDrop(e) { e.preventDefault(); }
+    function drag(e) { e.dataTransfer.setData("textID", e.target.id); }
+
+    function dropToTarget(e) {
+        e.preventDefault();
+        const id = e.dataTransfer.getData("textID");
+        const el = document.getElementById(id);
+        const target = e.target.closest('.drop-zone');
+        if (target && target.children.length === 0) {
+            target.appendChild(el);
+            target.classList.add('filled');
+        }
+    }
+
+    function dropToBank(e) {
+        e.preventDefault();
+        const id = e.dataTransfer.getData("textID");
+        document.getElementById('answer-bank').appendChild(document.getElementById(id));
+        document.querySelectorAll('.drop-zone').forEach(z => {
+            if(z.children.length === 0) z.classList.remove('filled');
+        });
+    }
+
+    function checkAll() {
+        let score = 0;
+        currentQuestions.forEach((q, i) => {
+            const zone = document.getElementById(`target-${i}`);
+            const dropped = zone.querySelector('.drag-item');
+            const userAns = dropped ? dropped.getAttribute('data-val') : "";
+
+            if (userAns === q.answer) {
+                score++;
+                zone.style.background = "#d1fae5";
+            } else {
+                zone.style.background = "#fee2e2";
+            }
+        });
+        document.getElementById('final-score').innerText = `نتيجتك: ${score} من ${currentQuestions.length}`;
+    }
+
+    window.onload = loadQuestions;
+</script>
+</body>
+</html>
