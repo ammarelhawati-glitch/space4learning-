@@ -1,0 +1,33 @@
+/* Protection CSS for Space4Learn
+   Created by: Ammar Barakat 
+*/
+
+
+body {
+    -webkit-user-select: none;  /* Safari/Chrome/iOS */
+    -webkit-touch-callout: none; /* منع قائمة الحفظ في iOS */
+    -moz-user-select: none;     /* Firefox */
+    -ms-user-select: none;      /* IE/Edge */
+    user-select: none;          /* Standard */
+}
+
+/* استثناء العناصر التفاعلية لضمان قدرة الطالب على حل الامتحان */
+input, 
+textarea, 
+select, 
+button, 
+label, 
+.answer-option {
+    -webkit-user-select: auto !important;
+    user-select: auto !important;
+    -webkit-touch-callout: default !important;
+    cursor: pointer;
+}
+
+
+img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+}
