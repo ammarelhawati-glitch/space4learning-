@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الفيزياء - الاختبار الشامل</title>
+    <title>منصة الفيزياء الذكية - فلترة شاملة</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -32,7 +32,6 @@
             box-shadow: 0 8px 30px rgba(0,0,0,0.1);
         }
 
-        /* شاشة الإعدادات */
         .setup-screen h2 { color: var(--primary); text-align: center; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
@@ -56,10 +55,8 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .start-btn:hover { background: #1a252f; }
 
-        /* شاشة الاختبار */
-        #quiz-screen { display: none; }
+        #quiz-screen, #result-screen { display: none; }
         .quiz-header {
             display: flex;
             justify-content: space-between;
@@ -70,13 +67,7 @@
         }
         .timer { color: var(--error); font-weight: bold; font-size: 1.2rem; }
         
-        .question-text {
-            font-size: 1.3rem;
-            color: var(--primary);
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
+        .question-text { font-size: 1.3rem; color: var(--primary); margin-bottom: 25px; line-height: 1.6; }
         .options-grid { display: grid; gap: 10px; }
         .opt-btn {
             padding: 15px;
@@ -89,23 +80,10 @@
             transition: 0.2s;
         }
         .opt-btn:hover:not([disabled]) { border-color: var(--accent); background: #f0f7ff; }
-
         .correct { background: var(--success) !important; color: white; border-color: var(--success); }
         .wrong { background: var(--error) !important; color: white; border-color: var(--error); }
-
-        #next-btn {
-            margin-top: 25px;
-            background: var(--accent);
-            display: none;
-        }
-
-        /* شاشة النتيجة */
-        #result-screen { display: none; text-align: center; }
-        .score-circle {
-            font-size: 3rem;
-            color: var(--primary);
-            margin: 20px 0;
-        }
+        #next-btn { margin-top: 25px; background: var(--accent); display: none; }
+        .score-circle { font-size: 3rem; color: var(--primary); margin: 20px 0; text-align: center; }
     </style>
 </head>
 <body>
@@ -114,13 +92,10 @@
     <div id="setup-screen">
         <h2>إعداد الاختبار الشامل</h2>
         <div class="form-group">
-            <label>اختر الموضوع:</label>
+            <label>اختر القسم (يتم التحديث تلقائياً):</label>
             <select id="topic-select">
                 <option value="all">كل المواضيع (اختبار متنوع)</option>
-                <option value="SHM">الحركة التوافقية البسيطة (SHM)</option>
-                <option value="Optics">الضوء والمرايا</option>
-                <option value="Electricity">الكهرباء الساكنة</option>
-            </select>
+                </select>
         </div>
 
         <div class="form-group">
@@ -135,13 +110,13 @@
         <div class="form-group">
             <label>وقت الاختبار:</label>
             <select id="time-select">
-                <option value="1">دقيقة واحدة</option>
                 <option value="5">5 دقائق</option>
                 <option value="10">10 دقائق</option>
+                <option value="15">15 دقيقة</option>
             </select>
         </div>
 
-        <button class="start-btn" onclick="initQuiz()">ابدأ الاختبار</button>
+        <button id="start-btn-ui" class="start-btn" onclick="initQuiz()" disabled>جاري تحميل البيانات...</button>
     </div>
 
     <div id="quiz-screen">
@@ -155,49 +130,61 @@
     </div>
 
     <div id="result-screen">
-        <h2 id="result-title">انتهى الاختبار</h2>
+        <h2 id="result-title" style="text-align: center;">انتهى الاختبار</h2>
         <div class="score-circle" id="final-score">0 / 0</div>
-        <p id="result-comment"></p>
         <button class="start-btn" onclick="location.reload()">إجراء اختبار جديد</button>
     </div>
 </div>
 
 <script>
-    let db = []; // قاعدة البيانات الأصلية
-    let currentQuestions = []; // الأسئلة المختارة للاختبار الحالي
+    let db = [];
+    let currentQuestions = [];
     let currentIndex = 0;
     let score = 0;
     let timerInterval;
 
-    // جلب البيانات من ملف JSON عند تحميل الصفحة
+    // 1. جلب البيانات واستخراج الأقسام تلقائياً
     async function loadDatabase() {
         try {
             const response = await fetch('questions.json');
             db = await response.json();
+            
+            populateTopics(); // استخراج الأقسام ووضعها في القائمة
+            
+            const startBtn = document.getElementById('start-btn-ui');
+            startBtn.innerText = "ابدأ الاختبار";
+            startBtn.disabled = false;
         } catch (error) {
-            console.error("فشل تحميل الأسئلة:", error);
-            alert("تأكد من وجود ملف questions.json بجانب صفحة الـ HTML");
+            console.error("فشل التحميل:", error);
+            document.querySelector('h2').innerText = "خطأ في ملف JSON";
         }
     }
 
-    // بدء الاختبار
+    // 2. دالة استخراج الأقسام الفريدة من الـ JSON
+    function populateTopics() {
+        const select = document.getElementById('topic-select');
+        
+        // استخراج قيم الـ topic الفريدة (Unique)
+        const topics = [...new Set(db.map(item => item.topic))];
+        
+        topics.forEach(t => {
+            if(t) { // التأكد أن القسم ليس فارغاً
+                const option = document.createElement('option');
+                option.value = t;
+                option.innerText = t; // سيظهر اسم القسم كما هو مكتوب في ملفك (مثل SHM)
+                select.appendChild(option);
+            }
+        });
+    }
+
     function initQuiz() {
         const topic = document.getElementById('topic-select').value;
         const count = parseInt(document.getElementById('count-select').value);
         const minutes = parseInt(document.getElementById('time-select').value);
 
-        // 1. تصفية الأسئلة
         let pool = topic === 'all' ? [...db] : db.filter(q => q.topic === topic);
-
-        if (pool.length === 0) {
-            alert("لا توجد أسئلة كافية لهذا القسم حالياً.");
-            return;
-        }
-
-        // 2. خلط الأسئلة واختيار العدد المطلوب
         currentQuestions = pool.sort(() => 0.5 - Math.random()).slice(0, count);
 
-        // 3. تبديل الواجهات
         document.getElementById('setup-screen').style.display = 'none';
         document.getElementById('quiz-screen').style.display = 'block';
         document.getElementById('q-total').innerText = currentQuestions.length;
@@ -210,12 +197,10 @@
         const q = currentQuestions[currentIndex];
         document.getElementById('q-num').innerText = currentIndex + 1;
         document.getElementById('question-text').innerText = q.question;
-        
         const box = document.getElementById('options-box');
         box.innerHTML = '';
         document.getElementById('next-btn').style.display = 'none';
 
-        // إنشاء أزرار الخيارات بناءً على مفاتيحك (option1, option2...)
         for (let i = 1; i <= 4; i++) {
             const btn = document.createElement('button');
             btn.className = 'opt-btn';
@@ -252,13 +237,8 @@
         timerInterval = setInterval(() => {
             let m = Math.floor(timeLeft / 60);
             let s = timeLeft % 60;
-            document.getElementById('timer').innerText = 
-                `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                showResults("انتهى الوقت!");
-            }
+            document.getElementById('timer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); showResults("انتهى الوقت!"); }
             timeLeft--;
         }, 1000);
     }
@@ -267,12 +247,7 @@
         clearInterval(timerInterval);
         document.getElementById('quiz-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
-        document.getElementById('result-title').innerText = msg;
         document.getElementById('final-score').innerText = `${score} / ${currentQuestions.length}`;
-        
-        const percent = (score / currentQuestions.length) * 100;
-        document.getElementById('result-comment').innerText = 
-            percent >= 50 ? "أحسنت! أداء ممتاز." : "حاول مرة أخرى لتحسين مستواك.";
     }
 
     window.onload = loadDatabase;
