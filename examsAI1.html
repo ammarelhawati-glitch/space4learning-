@@ -3,101 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الفيزياء الذكية - فلترة شاملة</title>
+    <title>Space4Learn | منصة الاختبارات الذكية</title>
     <style>
         :root {
-            --primary: #2c3e50;
-            --accent: #3498db;
-            --success: #27ae60;
-            --error: #e74c3c;
-            --bg: #f4f7f6;
+            --space-dark: #0b0e14;
+            --space-blue: #1e3a8a;
+            --accent-cyan: #06b6d4;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --text-light: #f3f4f6;
+            --success: #10b981;
+            --error: #ef4444;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
+            background: radial-gradient(circle at center, #1e293b 0%, #0b0e14 100%);
+            color: var(--text-light);
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
+
+        /* خلفية جزيئات بسيطة */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 1px; height: 1px;
+            background: transparent;
+            box-shadow: 10vw 20vh #fff, 50vw 10vh #fff, 80vw 40vh #fff, 20vw 70vh #fff, 60vw 90vh #fff;
+            animation: stars 100s linear infinite;
+        }
+
+        @keyframes stars { from { transform: translateY(0); } to { transform: translateY(-1000px); } }
 
         .container {
-            background: white;
-            width: 95%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 90%;
             max-width: 600px;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 10;
         }
 
-        .setup-screen h2 { color: var(--primary); text-align: center; }
+        /* الهوية البصرية للموقع */
+        .brand { text-align: center; margin-bottom: 30px; }
+        .brand h1 { 
+            font-size: 2.2rem; 
+            margin: 0; 
+            background: linear-gradient(to right, #22d3ee, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+        .brand p { font-size: 0.9rem; opacity: 0.7; margin-top: 5px; }
+
+        .setup-screen h2 { text-align: center; font-weight: 300; margin-bottom: 30px; }
+
+        /* تنسيق القوائم المنسدلة */
         .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        label { display: block; margin-bottom: 10px; font-size: 0.9rem; color: #94a3b8; }
         select {
             width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 2px solid #ddd;
+            padding: 14px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            color: white;
             font-size: 1rem;
-            outline: none;
+            cursor: pointer;
+            transition: 0.3s;
         }
+        select:focus { border-color: var(--accent-cyan); outline: none; }
 
-        .start-btn {
+        .btn {
             width: 100%;
-            padding: 15px;
-            background: var(--primary);
+            padding: 16px;
+            background: linear-gradient(135deg, #0891b2 0%, #1e40af 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(6, 182, 212, 0.3); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* واجهة الاختبار */
+        #quiz-screen { display: none; }
+        .header-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+        .timer { color: #f87171; font-family: monospace; font-size: 1.3rem; }
+
+        .question-text { font-size: 1.4rem; line-height: 1.6; margin-bottom: 30px; }
+
+        .options-grid { display: grid; gap: 15px; }
+        .opt-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #334155;
+            padding: 18px;
+            border-radius: 15px;
+            color: var(--text-light);
+            text-align: right;
             font-size: 1.1rem;
             cursor: pointer;
             transition: 0.3s;
         }
-
-        #quiz-screen, #result-screen { display: none; }
-        .quiz-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #eee;
-            margin-bottom: 20px;
-        }
-        .timer { color: var(--error); font-weight: bold; font-size: 1.2rem; }
+        .opt-btn:hover:not([disabled]) { background: rgba(255, 255, 255, 0.1); border-color: var(--accent-cyan); }
         
-        .question-text { font-size: 1.3rem; color: var(--primary); margin-bottom: 25px; line-height: 1.6; }
-        .options-grid { display: grid; gap: 10px; }
-        .opt-btn {
-            padding: 15px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            background: white;
-            cursor: pointer;
-            font-size: 1.1rem;
-            text-align: right;
-            transition: 0.2s;
+        .correct { background: var(--success) !important; border-color: var(--success); }
+        .wrong { background: var(--error) !important; border-color: var(--error); }
+
+        /* التذييل بالاسم */
+        .footer-credit {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: #64748b;
         }
-        .opt-btn:hover:not([disabled]) { border-color: var(--accent); background: #f0f7ff; }
-        .correct { background: var(--success) !important; color: white; border-color: var(--success); }
-        .wrong { background: var(--error) !important; color: white; border-color: var(--error); }
-        #next-btn { margin-top: 25px; background: var(--accent); display: none; }
-        .score-circle { font-size: 3rem; color: var(--primary); margin: 20px 0; text-align: center; }
+        .footer-credit b { color: var(--accent-cyan); }
+
+        #result-screen { display: none; text-align: center; }
+        .score-display { font-size: 4rem; font-weight: bold; margin: 20px 0; color: var(--accent-cyan); }
+
+        #next-btn { display: none; margin-top: 25px; background: var(--space-blue); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="setup-screen">
-        <h2>إعداد الاختبار الشامل</h2>
-        <div class="form-group">
-            <label>اختر القسم (يتم التحديث تلقائياً):</label>
-            <select id="topic-select">
-                <option value="all">كل المواضيع (اختبار متنوع)</option>
-                </select>
-        </div>
+    <div class="brand">
+        <h1>Space4Learn</h1>
+        <p>رحلتك التعليمية في آفاق الفيزياء</p>
+    </div>
 
+    <div id="setup-screen">
+        <h2>تخصيص الاختبار</h2>
+        <div class="form-group">
+            <label>الموضوع الدراسي:</label>
+            <select id="topic-select">
+                <option value="all">اختبار شامل (جميع المواضيع)</option>
+            </select>
+        </div>
         <div class="form-group">
             <label>عدد الأسئلة:</label>
             <select id="count-select">
@@ -106,33 +168,36 @@
                 <option value="20">20 سؤال</option>
             </select>
         </div>
-
         <div class="form-group">
-            <label>وقت الاختبار:</label>
+            <label>المدة الزمنية:</label>
             <select id="time-select">
                 <option value="5">5 دقائق</option>
                 <option value="10">10 دقائق</option>
                 <option value="15">15 دقيقة</option>
             </select>
         </div>
-
-        <button id="start-btn-ui" class="start-btn" onclick="initQuiz()" disabled>جاري تحميل البيانات...</button>
+        <button id="start-btn" class="btn" onclick="initQuiz()" disabled>جاري تحضير البيانات...</button>
     </div>
 
     <div id="quiz-screen">
-        <div class="quiz-header">
-            <div>سؤال <span id="q-num">1</span> من <span id="q-total">0</span></div>
+        <div class="header-meta">
+            <span>سؤال <b id="q-num">1</b> / <b id="q-total">0</b></span>
             <div class="timer" id="timer">00:00</div>
         </div>
         <div id="question-text" class="question-text"></div>
         <div id="options-box" class="options-grid"></div>
-        <button id="next-btn" class="start-btn" onclick="handleNext()">السؤال التالي</button>
+        <button id="next-btn" class="btn" onclick="handleNext()">السؤال التالي ←</button>
     </div>
 
     <div id="result-screen">
-        <h2 id="result-title" style="text-align: center;">انتهى الاختبار</h2>
-        <div class="score-circle" id="final-score">0 / 0</div>
-        <button class="start-btn" onclick="location.reload()">إجراء اختبار جديد</button>
+        <h2>انتهت الرحلة!</h2>
+        <div class="score-display" id="final-score">0 / 0</div>
+        <p id="result-comment"></p>
+        <button class="btn" onclick="location.reload()">بدء اختبار جديد</button>
+    </div>
+
+    <div class="footer-credit">
+        بواسطة <b>Ammar Barakat</b> | جميع الحقوق محفوظة لـ space4learn.com
     </div>
 </div>
 
@@ -143,36 +208,27 @@
     let score = 0;
     let timerInterval;
 
-    // 1. جلب البيانات واستخراج الأقسام تلقائياً
     async function loadDatabase() {
         try {
             const response = await fetch('questions.json');
             db = await response.json();
-            
-            populateTopics(); // استخراج الأقسام ووضعها في القائمة
-            
-            const startBtn = document.getElementById('start-btn-ui');
-            startBtn.innerText = "ابدأ الاختبار";
+            populateTopics();
+            const startBtn = document.getElementById('start-btn');
+            startBtn.innerText = "انطلاق الاختبار 🚀";
             startBtn.disabled = false;
-        } catch (error) {
-            console.error("فشل التحميل:", error);
-            document.querySelector('h2').innerText = "خطأ في ملف JSON";
+        } catch (e) {
+            document.querySelector('h2').innerText = "خطأ: تأكد من ملف questions.json";
         }
     }
 
-    // 2. دالة استخراج الأقسام الفريدة من الـ JSON
     function populateTopics() {
         const select = document.getElementById('topic-select');
-        
-        // استخراج قيم الـ topic الفريدة (Unique)
-        const topics = [...new Set(db.map(item => item.topic))];
-        
+        const topics = [...new Set(db.map(q => q.topic))];
         topics.forEach(t => {
-            if(t) { // التأكد أن القسم ليس فارغاً
-                const option = document.createElement('option');
-                option.value = t;
-                option.innerText = t; // سيظهر اسم القسم كما هو مكتوب في ملفك (مثل SHM)
-                select.appendChild(option);
+            if(t) {
+                let opt = document.createElement('option');
+                opt.value = t; opt.innerText = t;
+                select.appendChild(opt);
             }
         });
     }
@@ -211,47 +267,44 @@
     }
 
     function checkAnswer(btn, correct) {
-        const allBtns = document.querySelectorAll('.opt-btn');
-        if (btn.innerText === correct) {
+        const btns = document.querySelectorAll('.opt-btn');
+        if(btn.innerText === correct) {
             btn.classList.add('correct');
             score++;
         } else {
             btn.classList.add('wrong');
-            allBtns.forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
+            btns.forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
         }
-        allBtns.forEach(b => b.disabled = true);
+        btns.forEach(b => b.disabled = true);
         document.getElementById('next-btn').style.display = 'block';
     }
 
     function handleNext() {
         currentIndex++;
-        if (currentIndex < currentQuestions.length) {
-            renderQuestion();
-        } else {
-            showResults();
-        }
+        if(currentIndex < currentQuestions.length) renderQuestion();
+        else showResults();
     }
 
-    function startTimer(seconds) {
-        let timeLeft = seconds;
+    function startTimer(sec) {
+        let left = sec;
         timerInterval = setInterval(() => {
-            let m = Math.floor(timeLeft / 60);
-            let s = timeLeft % 60;
-            document.getElementById('timer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            if (timeLeft <= 0) { clearInterval(timerInterval); showResults("انتهى الوقت!"); }
-            timeLeft--;
+            let m = Math.floor(left / 60), s = left % 60;
+            document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            if(left <= 0) { clearInterval(timerInterval); showResults("انتهى الوقت!"); }
+            left--;
         }, 1000);
     }
 
-    function showResults(msg = "انتهى الاختبار") {
+    function showResults(msg = "اكتمل الاختبار") {
         clearInterval(timerInterval);
         document.getElementById('quiz-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
         document.getElementById('final-score').innerText = `${score} / ${currentQuestions.length}`;
+        const p = (score/currentQuestions.length)*100;
+        document.getElementById('result-comment').innerText = p >= 50 ? "رائع! لقد اجتزت الاختبار بنجاح." : "حاول مجدداً، المعرفة تأتي بالتكرار.";
     }
 
     window.onload = loadDatabase;
 </script>
-
 </body>
 </html>
