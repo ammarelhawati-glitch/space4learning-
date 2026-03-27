@@ -3,192 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اختبار الفيزياء - الحركة التوافقية البسيطة</title>
+    <title>منصة اختبارات الفيزياء الذكية</title>
     <style>
         :root {
             --primary: #2c3e50;
             --accent: #3498db;
             --success: #27ae60;
             --error: #e74c3c;
+            --bg: #f8f9fa;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
         }
 
-        #quiz-card {
+        .container {
             background: white;
-            width: 90%;
-            max-width: 550px;
+            width: 95%;
+            max-width: 650px;
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        .topic-badge {
-            background: var(--accent);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            display: inline-block;
-            margin-bottom: 15px;
+        /* واجهة الإعدادات */
+        .setup-screen h2 { color: var(--primary); margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; text-align: right; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            font-size: 1rem;
         }
 
-        .question-text {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        .options-grid {
-            display: grid;
-            gap: 12px;
-        }
-
-        .opt-btn {
-            border: 2px solid #eaeeef;
-            background: white;
+        .start-btn {
+            width: 100%;
             padding: 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: all 0.2s;
-            text-align: right;
-            color: var(--primary);
-        }
-
-        .opt-btn:hover:not([disabled]) {
-            border-color: var(--accent);
-            background: #f7fbff;
-        }
-
-        .correct { background-color: var(--success) !important; color: white; border-color: var(--success); }
-        .wrong { background-color: var(--error) !important; color: white; border-color: var(--error); }
-
-        #footer-area {
-            margin-top: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-
-        #next-btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 10px 25px;
-            border-radius: 8px;
+            border-radius: 10px;
+            font-size: 1.2rem;
             cursor: pointer;
-            display: none;
+            transition: 0.3s;
         }
+
+        /* واجهة الاختبار */
+        .quiz-screen { display: none; }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .timer { font-weight: bold; color: var(--error); font-size: 1.2rem; }
+        .question-text { font-size: 1.3rem; margin-bottom: 25px; line-height: 1.6; }
+        
+        .options-grid { display: grid; gap: 12px; }
+        .opt-btn {
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 1.1rem;
+            text-align: right;
+            transition: 0.2s;
+        }
+
+        .opt-btn:hover:not([disabled]) { border-color: var(--accent); background: #f0f7ff; }
+        .correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .wrong { background: var(--error) !important; color: white; border-color: var(--error); }
+
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div id="quiz-card">
-    <div id="quiz-content">
-        <span id="topic-display" class="topic-badge"></span>
-        <div id="question-text" class="question-text">جاري التحميل...</div>
+<div class="container">
+    <div id="setup-screen" class="setup-screen">
+        <h2>إعداد الاختبار الشامل</h2>
         
-        <div class="options-grid" id="options-box">
-            </div>
-
-        <div id="footer-area">
-            <span id="progress-text">السؤال 1 من --</span>
-            <button id="next-btn" onclick="handleNext()">السؤال التالي</button>
+        <div class="form-group">
+            <label>نوع الاختبار (الموضوع):</label>
+            <select id="topic-select">
+                <option value="all">متنوع (كل الأقسام)</option>
+                <option value="SHM">الحركة التوافقية البسيطة (SHM)</option>
+                <option value="Optics">الضوء والبصريات</option>
+                <option value="Electromagnetism">الكهرومغناطيسية</option>
+            </select>
         </div>
+
+        <div class="form-group">
+            <label>عدد الأسئلة:</label>
+            <select id="count-select">
+                <option value="5">5 أسئلة</option>
+                <option value="10">10 أسئلة</option>
+                <option value="20">20 سؤال</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>وقت الاختبار الكلي:</label>
+            <select id="time-select">
+                <option value="2">دقيقتان</option>
+                <option value="5">5 دقائق</option>
+                <option value="10">10 دقائق</option>
+            </select>
+        </div>
+
+        <button class="start-btn" onclick="startQuiz()">ابدأ الاختبار الآن</button>
+    </div>
+
+    <div id="quiz-screen" class="quiz-screen">
+        <div class="quiz-header">
+            <div>سؤال <span id="q-current">1</span> / <span id="q-total">0</span></div>
+            <div class="timer" id="timer-display">00:00</div>
+        </div>
+        
+        <div id="question-text" class="question-text"></div>
+        <div class="options-grid" id="options-box"></div>
+        
+        <button id="next-btn" class="start-btn hidden" style="margin-top: 20px;" onclick="nextQuestion()">السؤال التالي</button>
+    </div>
+
+    <div id="result-screen" class="quiz-screen" style="text-align: center;">
+        <h2 id="result-msg"></h2>
+        <div style="font-size: 3rem; margin: 20px 0;" id="final-score">0/0</div>
+        <button class="start-btn" onclick="location.reload()">إعادة اختبار جديد</button>
     </div>
 </div>
 
 <script>
-    let db = [];
-    let currentQ = 0;
+    let allQuestions = [];
+    let filteredQuestions = [];
+    let currentIdx = 0;
     let score = 0;
+    let timer;
+    let timeLeft;
 
-    // دالة سحب البيانات
-    async function initQuiz() {
+    // 1. جلب البيانات عند فتح الصفحة
+    async function loadData() {
         try {
-            const response = await fetch('questions.json'); // تأكد أن الملف بجانب الصفحة
-            db = await response.json();
-            renderQuestion();
-        } catch (err) {
-            document.getElementById('question-text').innerText = "خطأ في تحميل قاعدة البيانات";
+            const response = await fetch('questions.json');
+            allQuestions = await response.json();
+        } catch (e) {
+            alert("فشل تحميل قاعدة البيانات. تأكد من ملف JSON");
         }
     }
 
-    function renderQuestion() {
-        const qData = db[currentQ];
-        const optionsBox = document.getElementById('options-box');
-        
-        // تحديث النصوص
-        document.getElementById('topic-display').innerText = qData.topic;
-        document.getElementById('question-text').innerText = qData.question;
-        document.getElementById('progress-text').innerText = `السؤال ${currentQ + 1} من ${db.length}`;
-        
-        // تفريغ الأزرار القديمة
-        optionsBox.innerHTML = '';
-        document.getElementById('next-btn').style.display = 'none';
+    // 2. بدء الاختبار بناءً على الخيارات
+    function startQuiz() {
+        const topic = document.getElementById('topic-select').value;
+        const count = parseInt(document.getElementById('count-select').value);
+        timeLeft = parseInt(document.getElementById('time-select').value) * 60;
 
-        // إنشاء الأزرار بناءً على هيكل مفاتيحك (option1, option2...)
+        // تصفية الأسئلة
+        filteredQuestions = topic === 'all' 
+            ? [...allQuestions] 
+            : allQuestions.filter(q => q.topic === topic);
+
+        // خلط الأسئلة واختيار العدد المطلوب
+        filteredQuestions = filteredQuestions.sort(() => 0.5 - Math.random()).slice(0, count);
+
+        if(filteredQuestions.length === 0) {
+            alert("لا توجد أسئلة كافية في هذا القسم حالياً");
+            return;
+        }
+
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'block';
+        document.getElementById('q-total').innerText = filteredQuestions.length;
+        
+        startTimer();
+        showQuestion();
+    }
+
+    // 3. عرض السؤال
+    function showQuestion() {
+        const q = filteredQuestions[currentIdx];
+        document.getElementById('q-current').innerText = currentIdx + 1;
+        document.getElementById('question-text').innerText = q.question;
+        
+        const box = document.getElementById('options-box');
+        box.innerHTML = '';
+        document.getElementById('next-btn').classList.add('hidden');
+
+        // جلب الخيارات من 1 إلى 4 حسب هيكلك
         for(let i=1; i<=4; i++) {
             const btn = document.createElement('button');
             btn.className = 'opt-btn';
-            btn.innerText = qData[`option${i}`];
-            btn.onclick = () => checkAnswer(btn, qData.answer);
-            optionsBox.appendChild(btn);
+            btn.innerText = q[`option${i}`];
+            btn.onclick = () => checkAnswer(btn, q.answer);
+            box.appendChild(btn);
         }
     }
 
-    function checkAnswer(selectedBtn, correctText) {
+    // 4. التحقق من الإجابة
+    function checkAnswer(btn, correct) {
         const allBtns = document.querySelectorAll('.opt-btn');
-        
-        if (selectedBtn.innerText === correctText) {
-            selectedBtn.classList.add('correct');
+        if(btn.innerText === correct) {
+            btn.classList.add('correct');
             score++;
         } else {
-            selectedBtn.classList.add('wrong');
-            // كشف الإجابة الصحيحة
-            allBtns.forEach(b => {
-                if(b.innerText === correctText) b.classList.add('correct');
-            });
+            btn.classList.add('wrong');
+            allBtns.forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
         }
-
         allBtns.forEach(b => b.disabled = true);
-        document.getElementById('next-btn').style.display = 'block';
+        document.getElementById('next-btn').classList.remove('hidden');
     }
 
-    function handleNext() {
-        currentQ++;
-        if(currentQ < db.length) {
-            renderQuestion();
+    // 5. السؤال التالي أو النهاية
+    function nextQuestion() {
+        currentIdx++;
+        if(currentIdx < filteredQuestions.length) {
+            showQuestion();
         } else {
-            showFinalResult();
+            endQuiz();
         }
     }
 
-    function showFinalResult() {
-        const card = document.getElementById('quiz-card');
-        card.innerHTML = `
-            <div style="text-align:center">
-                <h2>اكتمل الاختبار!</h2>
-                <p style="font-size:1.5rem">درجتك النهائية: ${score} من ${db.length}</p>
-                <button onclick="location.reload()" style="padding:10px 20px; cursor:pointer">إعادة المحاولة</button>
-            </div>
-        `;
+    // 6. المؤقت
+    function startTimer() {
+        timer = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer-display').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            if(timeLeft <= 0) {
+                clearInterval(timer);
+                endQuiz("انتهى الوقت!");
+            }
+            timeLeft--;
+        }, 1000);
     }
 
-    initQuiz();
+    function endQuiz(msg = "اكتمل الاختبار") {
+        clearInterval(timer);
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        document.getElementById('result-msg').innerText = msg;
+        document.getElementById('final-score').innerText = `${score} / ${filteredQuestions.length}`;
+    }
+
+    window.onload = loadData;
 </script>
 
 </body>
