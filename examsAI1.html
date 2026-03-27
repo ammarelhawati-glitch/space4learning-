@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الفيزياء - الحركة التوافقية البسيطة</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        #quiz-card {
+            background: white;
+            width: 90%;
+            max-width: 550px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .topic-badge {
+            background: var(--accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .opt-btn {
+            border: 2px solid #eaeeef;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+            text-align: right;
+            color: var(--primary);
+        }
+
+        .opt-btn:hover:not([disabled]) {
+            border-color: var(--accent);
+            background: #f7fbff;
+        }
+
+        .correct { background-color: var(--success) !important; color: white; border-color: var(--success); }
+        .wrong { background-color: var(--error) !important; color: white; border-color: var(--error); }
+
+        #footer-area {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        #next-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-card">
+    <div id="quiz-content">
+        <span id="topic-display" class="topic-badge"></span>
+        <div id="question-text" class="question-text">جاري التحميل...</div>
+        
+        <div class="options-grid" id="options-box">
+            </div>
+
+        <div id="footer-area">
+            <span id="progress-text">السؤال 1 من --</span>
+            <button id="next-btn" onclick="handleNext()">السؤال التالي</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let db = [];
+    let currentQ = 0;
+    let score = 0;
+
+    // دالة سحب البيانات
+    async function initQuiz() {
+        try {
+            const response = await fetch('questions.json'); // تأكد أن الملف بجانب الصفحة
+            db = await response.json();
+            renderQuestion();
+        } catch (err) {
+            document.getElementById('question-text').innerText = "خطأ في تحميل قاعدة البيانات";
+        }
+    }
+
+    function renderQuestion() {
+        const qData = db[currentQ];
+        const optionsBox = document.getElementById('options-box');
+        
+        // تحديث النصوص
+        document.getElementById('topic-display').innerText = qData.topic;
+        document.getElementById('question-text').innerText = qData.question;
+        document.getElementById('progress-text').innerText = `السؤال ${currentQ + 1} من ${db.length}`;
+        
+        // تفريغ الأزرار القديمة
+        optionsBox.innerHTML = '';
+        document.getElementById('next-btn').style.display = 'none';
+
+        // إنشاء الأزرار بناءً على هيكل مفاتيحك (option1, option2...)
+        for(let i=1; i<=4; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerText = qData[`option${i}`];
+            btn.onclick = () => checkAnswer(btn, qData.answer);
+            optionsBox.appendChild(btn);
+        }
+    }
+
+    function checkAnswer(selectedBtn, correctText) {
+        const allBtns = document.querySelectorAll('.opt-btn');
+        
+        if (selectedBtn.innerText === correctText) {
+            selectedBtn.classList.add('correct');
+            score++;
+        } else {
+            selectedBtn.classList.add('wrong');
+            // كشف الإجابة الصحيحة
+            allBtns.forEach(b => {
+                if(b.innerText === correctText) b.classList.add('correct');
+            });
+        }
+
+        allBtns.forEach(b => b.disabled = true);
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function handleNext() {
+        currentQ++;
+        if(currentQ < db.length) {
+            renderQuestion();
+        } else {
+            showFinalResult();
+        }
+    }
+
+    function showFinalResult() {
+        const card = document.getElementById('quiz-card');
+        card.innerHTML = `
+            <div style="text-align:center">
+                <h2>اكتمل الاختبار!</h2>
+                <p style="font-size:1.5rem">درجتك النهائية: ${score} من ${db.length}</p>
+                <button onclick="location.reload()" style="padding:10px 20px; cursor:pointer">إعادة المحاولة</button>
+            </div>
+        `;
+    }
+
+    initQuiz();
+</script>
+
+</body>
+</html>
